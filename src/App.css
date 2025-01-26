@@ -1,0 +1,49 @@
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.react-flow {
+  --xy-node-border-radius: 0;
+  --xy-node-border-radius-default: 0;
+  --xy-node-border: none;
+  --xy-node-border-default: none;
+  --xy-node-boxshadow-selected: none;
+  --xy-node-boxshadow-selected-default: none;
+}
+
+.react-flow__node-input,
+.react-flow__node-default,
+.react-flow__node-output,
+.react-flow__node-group {
+  padding: 0;
+}
+
+.react-flow__handle {
+  opacity: 0;
+}
+
+.context-menu {
+  background: white;
+  border-style: solid;
+  box-shadow: 10px 19px 20px rgba(0, 0, 0, 10%);
+  position: absolute;
+  z-index: 10;
+}
+ 
+.context-menu button {
+  border: none;
+  display: block;
+  padding: 0.5em;
+  text-align: left;
+  width: 100%;
+}
+ 
+.context-menu button:hover {
+  background: white;
+}
