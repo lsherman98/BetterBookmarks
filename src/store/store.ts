@@ -39,6 +39,27 @@ const useStore = create<AppState>((set, get) => ({
         });
     },
     getNode: (id) => get().nodes.find((node) => node.id === id),
+    selectNode: (id) => {
+        set({
+            nodes: get().nodes.map((node) => ({
+                ...node,
+                selected: node.id === id,
+            })),
+        });
+    },
+    clearSelectedNodes: () => {
+        set({
+            nodes: get().nodes.map((node) => ({
+                ...node,
+                selected: false,
+            })),
+        });
+    },
+    isNodeSelected: () => get().nodes.some((node) => node.selected),
+    targetNode: null,
+    setTargetNode: (targetNode) => {
+        set({ targetNode });
+    },
 }));
 
 export default useStore;

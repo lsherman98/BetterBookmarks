@@ -10,7 +10,7 @@ import {
     forceX,
     forceY,
 } from "d3-force";
-import { collide } from "./collide";
+import { collide } from "../lib/collide";
 import { useNodesInitialized, useReactFlow } from "@xyflow/react";
 import { useMemo, useRef } from "react";
 
@@ -23,7 +23,7 @@ const simulation = forceSimulation()
     .stop();
 
 export const useLayoutedElements = (): any => {
-    const { getNodes, setNodes, getEdges } = useReactFlow();
+    const { getNodes, setNodes, getEdges, fitView } = useReactFlow();
     const initialized = useNodesInitialized();
 
     // You can use these events if you want the flow to remain interactive while
@@ -93,14 +93,22 @@ export const useLayoutedElements = (): any => {
             window.requestAnimationFrame(() => {
                 // Give React and React Flow a chance to update and render the new node
                 // positions before we fit the viewport to the new layout.
-                // fitView();
+                fitView({
+                    padding: 0.2,
+                });
 
                 // If the simulation hasn't been stopped, schedule another tick.
                 if (running) tick();
             });
         };
 
-        const toggle = () => {
+        const toggle = (cmd?: "on" | "off") => {
+            if (cmd === "on") {
+                running = true;
+            }
+            if (cmd === "off") {
+                running = false;
+            }
             if (!running) {
                 getNodes().forEach((node, index) => {
                     const simNode = nodes[index];
@@ -109,12 +117,13 @@ export const useLayoutedElements = (): any => {
                     simNode.y = node.position.y;
                 });
             }
-            running = !running;
+            if (cmd !== "on" && cmd !== "off") {
+                running = !running;
+            }
             running && window.requestAnimationFrame(tick);
         };
 
         const isRunning = () => running;
-
         return [true, { toggle, isRunning }, dragEvents];
-    }, [initialized, dragEvents, getNodes, getEdges, setNodes]);
+    }, [initialized, dragEvents, getNodes, getEdges, setNodes, fitView]);
 };

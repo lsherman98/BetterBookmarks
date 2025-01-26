@@ -1,4 +1,12 @@
-import { NodeProps, Node, useNodeId, Position, Handle, NodeToolbar, useReactFlow } from "@xyflow/react";
+import {
+  NodeProps,
+  Node,
+  useNodeId,
+  Position,
+  Handle,
+  NodeToolbar,
+  useReactFlow,
+} from "@xyflow/react";
 import { BaseNode } from "../base-node";
 import {
   NodeHeader,
@@ -22,15 +30,19 @@ import { useToast } from "@/hooks/use-toast";
 
 const selector = (state: AppState) => ({
   deleteNode: state.deleteNode,
+  targetNode: state.targetNode,
 });
 
-export function DefaultNode({ selected, data }: NodeProps<Node<{ label: string; title: string }>>) {
+export function DefaultNode({
+  selected,
+  data,
+}: NodeProps<Node<{ label: string; title: string; intersecting: boolean }>>) {
   const id = useNodeId();
   const { getZoom } = useReactFlow();
-  const { deleteNode } = useStore(useShallow(selector));
+  const { deleteNode, targetNode } = useStore(useShallow(selector));
   const { toast } = useToast();
   const showContent = getZoom() >= 0.9;
-  
+
   const handleDelete = useCallback(() => {
     if (!id) {
       toast({
@@ -43,7 +55,7 @@ export function DefaultNode({ selected, data }: NodeProps<Node<{ label: string; 
   }, []);
 
   return (
-    <BaseNode selected={selected}>
+    <BaseNode selected={selected} className={id === targetNode ? "border-2 border-dashed border-blue-500" : ""}>
       <NodeHeader className="-mx-3 -mt-2 border-b">
         <NodeHeaderIcon>
           <Rocket />

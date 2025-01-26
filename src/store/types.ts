@@ -5,7 +5,7 @@ import {
     type OnEdgesChange,
 } from '@xyflow/react';
 
-export type AppNode = Node;
+export type AppNode = Node
 
 export type AppState = {
     nodes: AppNode[];
@@ -19,4 +19,9 @@ export type AppState = {
     deleteNode: (id: string) => void;
     addNodes: (node: AppNode[]) => void;
     getNode: (id: string) => AppNode | undefined;
+    selectNode: (id: string) => void;
+    clearSelectedNodes: () => void;
+    isNodeSelected: () => boolean;
+    targetNode: string | null;
+    setTargetNode: (targetNode: string | null) => void;
 };

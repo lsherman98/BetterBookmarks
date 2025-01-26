@@ -4,12 +4,13 @@ import {
   Controls,
   Panel,
   ReactFlow,
-  type FitViewOptions,
   type NodeTypes,
   type DefaultEdgeOptions,
   EdgeTypes,
   addEdge,
   Connection,
+  Node,
+  useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import "./App.css";
@@ -17,13 +18,12 @@ import { useShallow } from "zustand/react/shallow";
 
 import { AppState } from "./store/types";
 import useStore from "./store/store";
-import { useLayoutedElements } from "./lib/forceSimulation";
+import { useLayoutedElements } from "./hooks/useLayoutedElements";
 import { SidebarTrigger } from "./components/ui/sidebar";
 import { DefaultNode } from "./components/flow/nodes/default-node";
 import { useCallback, useEffect } from "react";
 import FloatingConnectionLine from "./components/flow/edges/floatingEdgeConnectionLine";
 import FloatingEdge from "./components/flow/edges/floatingEdge";
-import { useProximityConnect } from "./hooks/use-proximity-connect";
 // import { NodeInspector } from "./components/flow/devtools";
 
 const selector = (state: AppState) => ({
@@ -35,11 +35,11 @@ const selector = (state: AppState) => ({
   setEdges: state.setEdges,
   getNodes: state.getNodes,
   getEdges: state.getEdges,
+  selectNode: state.selectNode,
+  clearSelectedNodes: state.clearSelectedNodes,
+  isNodeSelected: state.isNodeSelected,
+  setTargetNode: state.setTargetNode,
 });
-
-const fitViewOptions: FitViewOptions = {
-  padding: 0.2,
-};
 
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
@@ -56,12 +56,24 @@ const edgeTypes: EdgeTypes = {
 };
 
 function App() {
-  const { nodes, edges, onNodesChange, onEdgesChange, setEdges } = useStore(useShallow(selector));
+  const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    setEdges,
+    selectNode,
+    clearSelectedNodes,
+    isNodeSelected,
+    setTargetNode,
+  } = useStore(useShallow(selector));
   const [initialized, { toggle, isRunning }, dragEvents] = useLayoutedElements();
-  const { onNodeDrag, onNodeDragStop } = useProximityConnect(edges, setEdges);
+  const { getIntersectingNodes } = useReactFlow();
 
   useEffect(() => {
-    if (initialized) toggle();
+    if (initialized) {
+      toggle("on");
+    }
   }, [toggle, initialized]);
 
   const onConnect = useCallback(
@@ -69,15 +81,46 @@ function App() {
     [setEdges, edges]
   );
 
-  const handleNodeDrag = (event, node) => {
-    dragEvents.drag(event, node);
-    onNodeDrag(event, node);
-  };
+  const handleNodeClick = useCallback(
+    (_, node) => {
+      toggle("off");
+      selectNode(node.id);
+    },
+    [toggle, selectNode]
+  );
 
-  const handleNodeDragStop = (event, node) => {
-    dragEvents.stop(event, node);
-    onNodeDragStop(event, node);
-  };
+  const handlePaneClick = useCallback(() => {
+    toggle("on");
+    clearSelectedNodes();
+  }, [toggle, clearSelectedNodes]);
+
+  const handleNodeDrag = useCallback(
+    (event, node: Node) => {
+      dragEvents.drag(event, node);
+      const intersection = getIntersectingNodes(node).map((n) => n.id).at(0);
+      if (!intersection) setTargetNode(null);
+      else setTargetNode(intersection);
+    },
+    [dragEvents, getIntersectingNodes, setTargetNode]
+  );
+
+  const handleNodeDragStart = useCallback(
+    (event, node: Node) => {
+      toggle("off");
+      dragEvents.start(event, node);
+    },
+    [toggle, dragEvents]
+  );
+
+  const handleNodeDragStop = useCallback(
+    (event, node: Node) => {
+      if (!isNodeSelected()) {
+        toggle("on");
+      }
+      dragEvents.stop(event, node);
+    },
+    [toggle, dragEvents, isNodeSelected]
+  );
 
   return (
     <div className="w-full h-full">
@@ -87,10 +130,8 @@ function App() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeDrag={handleNodeDrag}
-        onNodeDragStart={dragEvents.start}
+        onNodeDragStart={handleNodeDragStart}
         onNodeDragStop={handleNodeDragStop}
-        fitView
-        fitViewOptions={fitViewOptions}
         defaultEdgeOptions={defaultEdgeOptions}
         edgeTypes={edgeTypes}
         nodeTypes={nodeTypes}
@@ -100,14 +141,16 @@ function App() {
         onConnect={onConnect}
         connectionLineComponent={FloatingConnectionLine}
         defaultViewport={defaultViewport}
+        selectNodesOnDrag={true}
+        elevateEdgesOnSelect={true}
+        elevateNodesOnSelect={true}
+        onNodeClick={handleNodeClick}
+        onPaneClick={handlePaneClick}
       >
         <Panel position="top-left">
           <SidebarTrigger className="-ml-1" />
-        </Panel>
-        <Panel position="top-right">
-          {initialized && (
-            <button onClick={toggle}>{isRunning() ? "Stop" : "Start"} force simulation</button>
-          )}
+          <br />
+          {initialized && <div>force simulation is {isRunning() ? "running" : "stopped"}</div>}
         </Panel>
         <Controls />
         {/* <MiniMap /> */}
