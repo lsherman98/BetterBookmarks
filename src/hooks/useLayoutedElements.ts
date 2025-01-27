@@ -23,7 +23,7 @@ const simulation = forceSimulation()
     .stop();
 
 export const useLayoutedElements = (): any => {
-    const { getNodes, setNodes, getEdges, fitView } = useReactFlow();
+    const { getNodes, setNodes, getEdges } = useReactFlow();
     const initialized = useNodesInitialized();
 
     // You can use these events if you want the flow to remain interactive while
@@ -93,10 +93,10 @@ export const useLayoutedElements = (): any => {
             window.requestAnimationFrame(() => {
                 // Give React and React Flow a chance to update and render the new node
                 // positions before we fit the viewport to the new layout.
-                fitView({
-                    padding: 0.2,
-                });
-
+                // fitView({
+                //     padding: 0.2,
+                //     duration: 500
+                // });
                 // If the simulation hasn't been stopped, schedule another tick.
                 if (running) tick();
             });
@@ -125,5 +125,5 @@ export const useLayoutedElements = (): any => {
 
         const isRunning = () => running;
         return [true, { toggle, isRunning }, dragEvents];
-    }, [initialized, dragEvents, getNodes, getEdges, setNodes, fitView]);
+    }, [initialized, dragEvents, getNodes, getEdges, setNodes]);
 };
