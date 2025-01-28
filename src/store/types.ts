@@ -24,4 +24,6 @@ export type AppState = {
     isNodeSelected: () => boolean;
     targetNode: string | null;
     setTargetNode: (targetNode: string | null) => void;
+    isRunning: boolean;
+    setIsRunning: (isRunning: boolean) => void;
 };

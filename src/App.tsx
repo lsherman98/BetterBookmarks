@@ -1,36 +1,46 @@
 import {
   Background,
   BackgroundVariant,
-  Controls,
   Panel,
   ReactFlow,
   type NodeTypes,
   type DefaultEdgeOptions,
   EdgeTypes,
   useReactFlow,
+  addEdge,
+  Connection,
+  Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import "./App.css";
 import { useShallow } from "zustand/react/shallow";
 
-import { AppState } from "./store/types";
-import useStore from "./store/store";
-import { useLayoutedElements } from "./hooks/useLayoutedElements";
-import { SidebarTrigger } from "./components/ui/sidebar";
-import { DefaultNode } from "./components/flow/nodes/default-node";
-import { useRef } from "react";
-import FloatingConnectionLine from "./components/flow/edges/floatingEdgeConnectionLine";
-import FloatingEdge from "./components/flow/edges/floatingEdge";
-import { FlowSidebar } from "./components/flow/FlowSidebar.js";
-import { CrosshairIcon } from "lucide-react";
-import { useEventHandlers } from "./hooks/useEventHandlers.js";
-// import { NodeInspector } from "./components/flow/devtools";
+import { AppNode, AppState } from "@/store/types";
+import useStore from "@/store/store";
+import { useLayoutedElements } from "@/hooks/useLayoutedElements.js";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useCallback, useEffect, useRef } from "react";
+import { FlowSidebar } from "@/components/flow/FlowSidebar.jsx";
+import { FitViewTrigger } from "@/components/flow/FitViewTrigger.jsx";
+import { DefaultNode } from "@/components/flow/nodes/DefaultNode.jsx";
+import { useDnD } from "@/hooks/useDnD.jsx";
+import FloatingEdge from "@/components/flow/edges/FloatingEdge.jsx";
+import FloatingConnectionLine from "@/components/flow/edges/FloatingEdgeConnectionLine.jsx";
+import { DevTools } from "@/components/flow/DevTools.jsx";
+import { Button } from "./components/ui/button";
 
 const selector = (state: AppState) => ({
   nodes: state.nodes,
   edges: state.edges,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
+  setEdges: state.setEdges,
+  selectNode: state.selectNode,
+  clearSelectedNodes: state.clearSelectedNodes,
+  isNodeSelected: state.isNodeSelected,
+  setTargetNode: state.setTargetNode,
+  addNodes: state.addNodes,
+  isRunning: state.isRunning,
 });
 
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
@@ -48,22 +58,142 @@ const edgeTypes: EdgeTypes = {
 };
 
 function App() {
-  const { nodes, edges, onNodesChange, onEdgesChange } = useStore(useShallow(selector));
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [initialized, { toggle, isRunning }, dragEvents] = useLayoutedElements();
-  const { fitView } = useReactFlow();
-  const reactFlowWrapper = useRef(null);
-
   const {
-    onConnect,
-    handleNodeClick,
-    handlePaneClick,
-    handleNodeDrag,
-    handleNodeDragStart,
-    handleNodeDragStop,
-    handleDragOver,
-    onDrop,
-  } = useEventHandlers();
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    setEdges,
+    selectNode,
+    clearSelectedNodes,
+    setTargetNode,
+    addNodes,
+    isRunning,
+  } = useStore(useShallow(selector));
+  const [initialized, { toggle, }, dragEvents] = useLayoutedElements();
+  const { getIntersectingNodes, screenToFlowPosition, fitView, viewportInitialized, setCenter } =
+    useReactFlow();
+  const reactFlowWrapper = useRef(null);
+  const [type] = useDnD();
+
+  useEffect(() => {
+    if (initialized && viewportInitialized) {
+      setTimeout(() => {
+        fitView({
+          padding: 0.2,
+          duration: 500,
+        });
+      }, 100);
+    }
+  }, [toggle, initialized, viewportInitialized, setCenter, fitView]);
+
+  const onConnect = useCallback(
+    (params: Connection) => setEdges(addEdge(params, edges)),
+    [edges, setEdges]
+  );
+
+  const handleNodeClick = useCallback(
+    (_, node) => {
+      toggle("off")
+      selectNode(node.id);
+    },
+    [selectNode, toggle]
+  );
+
+  const handlePaneClick = useCallback(() => {
+    clearSelectedNodes();
+  }, [clearSelectedNodes]);
+
+  const handleNodeDrag = useCallback(
+    (event, node: Node) => {
+      toggle("off")
+      dragEvents.drag(event, node);
+      const intersection = getIntersectingNodes(node)
+        .map((n) => n.id)
+        .at(0);
+      if (!intersection) setTargetNode(null);
+      else setTargetNode(intersection);
+    },
+    [dragEvents, getIntersectingNodes, setTargetNode, toggle]
+  );
+
+  const handleNodeDragStart = useCallback(
+    (event, node: Node) => {
+      dragEvents.start(event, node);
+    },
+    [dragEvents]
+  );
+
+  const handleNodeDragStop = useCallback(
+    (event, node: Node) => {
+      setTargetNode(null);
+      dragEvents.stop(event, node);
+
+      const intersectingNode = getIntersectingNodes(node)
+        .map((n) => n.id)
+        .at(0);
+
+      if (intersectingNode && intersectingNode !== node.id) {
+        const newEdges = edges.map((edge) =>
+          edge.target === node.id ? { ...edge, source: intersectingNode } : edge
+        );
+        setEdges(newEdges);
+      }
+    },
+    [setTargetNode, dragEvents, getIntersectingNodes, edges, setEdges]
+  );
+
+  const handleDragOver = useCallback(
+    (event) => {
+      toggle("off")
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      const intersectingNode = getIntersectingNodes(
+        { ...position, width: 150, height: 109 },
+        true
+      ).at(0);
+      setTargetNode(intersectingNode?.id ?? null);
+    },
+    [getIntersectingNodes, screenToFlowPosition, setTargetNode, toggle]
+  );
+
+  const onDrop = useCallback(
+    (event) => {
+      event.preventDefault();
+      setTargetNode(null);
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      const intersectingNode = getIntersectingNodes(
+        { ...position, width: 150, height: 109 },
+        true
+      ).at(0);
+      if (!intersectingNode) {
+        return;
+      }
+      const newNode: AppNode = {
+        id: (nodes.length + 1).toString(),
+        type: type,
+        position,
+        data: { label: `${type} node` },
+      };
+      const newEdge = {
+        id: `e${intersectingNode.id}-${newNode.id}`,
+        source: intersectingNode.id,
+        target: newNode.id,
+        type: "floating",
+      };
+      addNodes([newNode]);
+      setEdges([...edges, newEdge]);
+      selectNode(newNode.id);
+    },
+    [setTargetNode, screenToFlowPosition, getIntersectingNodes, nodes.length, type, addNodes, setEdges, edges, selectNode]
+  );
 
   return (
     <div className="flex flex-row flex-grow h-full" ref={reactFlowWrapper}>
@@ -97,27 +227,13 @@ function App() {
           zoomOnScroll={true}
           maxZoom={1.3}
         >
-          <Panel position="top-left">
+          <DevTools />
+          <Panel position="bottom-left">
             <SidebarTrigger className="-ml-1" />
-            <CrosshairIcon
-              size={24}
-              onClick={() =>
-                fitView({
-                  padding: 0.2,
-                  duration: 500,
-                })
-              }
-            />
-            <br />
-            {initialized && <div>force simulation is {isRunning() ? "running" : "stopped"}</div>}
+            <FitViewTrigger />
+            {initialized && <Button onClick={toggle}>{isRunning ? "running" : "stopped"}</Button>}
           </Panel>
-          <Controls />
-          {/* <MiniMap /> */}
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-          {/* <NodeToolbar /> */}
-          {/* <NodeResizer /> */}
-          {/* <NodeInspector /> */}
-          {/* <ChangeLogger /> */}
         </ReactFlow>
       </div>
       <FlowSidebar />

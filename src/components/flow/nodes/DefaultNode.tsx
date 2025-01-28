@@ -7,7 +7,7 @@ import {
   NodeToolbar,
   useReactFlow,
 } from "@xyflow/react";
-import { BaseNode } from "../base-node";
+import { BaseNode } from "../BaseNode";
 import {
   NodeHeader,
   NodeHeaderAction,
@@ -15,7 +15,7 @@ import {
   NodeHeaderIcon,
   NodeHeaderMenuAction,
   NodeHeaderTitle,
-} from "../node-header";
+} from "../NodeHeader";
 import { Rocket, Trash } from "lucide-react";
 import {
   DropdownMenuItem,
@@ -55,7 +55,10 @@ export function DefaultNode({
   }, [deleteNode, id, toast]);
 
   return (
-    <BaseNode selected={selected} className={id === targetNode ? "border-2 border-dashed border-blue-500" : ""}>
+    <BaseNode
+      selected={selected}
+      className={id === targetNode ? "border-2 border-dashed border-blue-500" : ""}
+    >
       <NodeHeader className="-mx-3 -mt-2 border-b">
         <NodeHeaderIcon>
           <Rocket />
