@@ -60,6 +60,10 @@ const useStore = create<AppState>((set, get) => ({
     setTargetNode: (targetNode) => {
         set({ targetNode });
     },
+    isRunning: false,
+    setIsRunning: (isRunning) => {
+        set({ isRunning });
+    },
 }));
 
 export default useStore;
