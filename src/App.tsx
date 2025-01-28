@@ -7,26 +7,23 @@ import {
   type NodeTypes,
   type DefaultEdgeOptions,
   EdgeTypes,
-  addEdge,
-  Connection,
-  Node,
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import "./App.css";
 import { useShallow } from "zustand/react/shallow";
 
-import { AppNode, AppState } from "./store/types";
+import { AppState } from "./store/types";
 import useStore from "./store/store";
 import { useLayoutedElements } from "./hooks/useLayoutedElements";
 import { SidebarTrigger } from "./components/ui/sidebar";
 import { DefaultNode } from "./components/flow/nodes/default-node";
-import { useCallback, useEffect, useRef } from "react";
+import { useRef } from "react";
 import FloatingConnectionLine from "./components/flow/edges/floatingEdgeConnectionLine";
 import FloatingEdge from "./components/flow/edges/floatingEdge";
 import { FlowSidebar } from "./components/flow/FlowSidebar.js";
-import { useDnD } from "./hooks/useDnD.js";
 import { CrosshairIcon } from "lucide-react";
+import { useEventHandlers } from "./hooks/useEventHandlers.js";
 // import { NodeInspector } from "./components/flow/devtools";
 
 const selector = (state: AppState) => ({
@@ -34,15 +31,6 @@ const selector = (state: AppState) => ({
   edges: state.edges,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
-  setNodes: state.setNodes,
-  setEdges: state.setEdges,
-  getNodes: state.getNodes,
-  getEdges: state.getEdges,
-  selectNode: state.selectNode,
-  clearSelectedNodes: state.clearSelectedNodes,
-  isNodeSelected: state.isNodeSelected,
-  setTargetNode: state.setTargetNode,
-  addNodes: state.addNodes,
 });
 
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
@@ -60,160 +48,22 @@ const edgeTypes: EdgeTypes = {
 };
 
 function App() {
-  const {
-    nodes,
-    edges,
-    onNodesChange,
-    onEdgesChange,
-    setEdges,
-    selectNode,
-    clearSelectedNodes,
-    isNodeSelected,
-    setTargetNode,
-    addNodes,
-  } = useStore(useShallow(selector));
+  const { nodes, edges, onNodesChange, onEdgesChange } = useStore(useShallow(selector));
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [initialized, { toggle, isRunning }, dragEvents] = useLayoutedElements();
-  const { getIntersectingNodes, screenToFlowPosition, fitView, viewportInitialized, setCenter } =
-    useReactFlow();
+  const { fitView } = useReactFlow();
   const reactFlowWrapper = useRef(null);
-  const [type] = useDnD();
 
-  useEffect(() => {
-    if (initialized && viewportInitialized) {
-      toggle("on");
-      setTimeout(() => {
-        fitView({
-          padding: 0.2,
-          duration: 500,
-        });
-      }, 2000);
-    }
-  }, [toggle, initialized, viewportInitialized, setCenter, fitView]);
-
-  const onConnect = useCallback(
-    (params: Connection) => setEdges(addEdge(params, edges)),
-    [setEdges, edges]
-  );
-
-  const handleNodeClick = useCallback(
-    (_, node) => {
-      toggle("off");
-      selectNode(node.id);
-    },
-    [toggle, selectNode]
-  );
-
-  const handlePaneClick = useCallback(() => {
-    clearSelectedNodes();
-    toggle("on");
-  }, [toggle, clearSelectedNodes]);
-
-  const handleNodeDrag = useCallback(
-    (event, node: Node) => {
-      dragEvents.drag(event, node);
-      const intersection = getIntersectingNodes(node)
-        .map((n) => n.id)
-        .at(0);
-      if (!intersection) setTargetNode(null);
-      else setTargetNode(intersection);
-    },
-    [dragEvents, getIntersectingNodes, setTargetNode]
-  );
-
-  const handleNodeDragStart = useCallback(
-    (event, node: Node) => {
-      toggle("off");
-      dragEvents.start(event, node);
-    },
-    [toggle, dragEvents]
-  );
-
-  const handleNodeDragStop = useCallback(
-    (event, node: Node) => {
-      setTargetNode(null);
-      if (!isNodeSelected()) {
-        toggle("on");
-      }
-      dragEvents.stop(event, node);
-
-      const intersectingNode = getIntersectingNodes(node)
-        .map((n) => n.id)
-        .at(0);
-
-      if (intersectingNode && intersectingNode !== node.id) {
-        const newEdges = edges.map((edge) =>
-          edge.target === node.id ? { ...edge, source: intersectingNode } : edge
-        );
-        setEdges(newEdges);
-      }
-
-      toggle("off");
-      toggle("on");
-    },
-    [setTargetNode, isNodeSelected, dragEvents, getIntersectingNodes, toggle, edges, setEdges]
-  );
-
-  const handleDragOver = useCallback(
-    (event) => {
-      event.preventDefault();
-      event.dataTransfer.dropEffect = "move";
-      toggle("off");
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-      const intersectingNode = getIntersectingNodes(
-        { ...position, width: 150, height: 109 },
-        true
-      ).at(0);
-      setTargetNode(intersectingNode?.id ?? null);
-    },
-    [getIntersectingNodes, screenToFlowPosition, setTargetNode, toggle]
-  );
-
-  const onDrop = useCallback(
-    (event) => {
-      event.preventDefault();
-      toggle("on");
-      setTargetNode(null);
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-      const intersectingNode = getIntersectingNodes(
-        { ...position, width: 150, height: 109 },
-        true
-      ).at(0);
-      if (!intersectingNode) {
-        return;
-      }
-      const newNode: AppNode = {
-        id: nodes.length.toString(),
-        type: type,
-        position,
-        data: { label: `${type} node` },
-      };
-      const newEdge = {
-        id: `e${intersectingNode.id}-${newNode.id}`,
-        source: intersectingNode.id,
-        target: newNode.id,
-        type: "floating",
-      };
-      addNodes([newNode]);
-      setEdges([...edges, newEdge]);
-    },
-    [
-      toggle,
-      setTargetNode,
-      screenToFlowPosition,
-      getIntersectingNodes,
-      nodes.length,
-      type,
-      addNodes,
-      setEdges,
-      edges,
-    ]
-  );
+  const {
+    onConnect,
+    handleNodeClick,
+    handlePaneClick,
+    handleNodeDrag,
+    handleNodeDragStart,
+    handleNodeDragStop,
+    handleDragOver,
+    onDrop,
+  } = useEventHandlers();
 
   return (
     <div className="flex flex-row flex-grow h-full" ref={reactFlowWrapper}>
