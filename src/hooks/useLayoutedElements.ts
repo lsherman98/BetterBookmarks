@@ -15,11 +15,11 @@ import { useNodesInitialized, useReactFlow } from "@xyflow/react";
 import { useMemo, useRef } from "react";
 
 const simulation = forceSimulation()
-    .force("charge", forceManyBody().strength(-1000))
+    .force("charge", forceManyBody().strength(-2000))
     .force("x", forceX().x(0).strength(0.05))
     .force("y", forceY().y(0).strength(0.05))
     .force("collide", collide())
-    .alphaTarget(0.05)
+    .alphaTarget(0.005)
     .stop();
 
 export const useLayoutedElements = (): any => {
@@ -33,11 +33,22 @@ export const useLayoutedElements = (): any => {
     const draggingNodeRef = useRef(null);
     const dragEvents = useMemo(
         () => ({
-            start: (_event, node) => (draggingNodeRef.current = node),
-            drag: (_event, node) => (draggingNodeRef.current = node),
-            stop: () => (draggingNodeRef.current = null),
+            start: (_event, node) => {
+                draggingNodeRef.current = node;
+            },
+            drag: (_event, node) => {
+                draggingNodeRef.current = node;
+                setNodes((nodes) =>
+                    nodes.map((n) =>
+                        n.id === node.id ? { ...n, zIndex: 1 } : { ...n, zIndex: 0 }
+                    )
+                );
+            },
+            stop: () => {
+                draggingNodeRef.current = null;
+            },
         }),
-        []
+        [setNodes]
     );
 
     return useMemo(() => {
@@ -115,6 +126,7 @@ export const useLayoutedElements = (): any => {
                     Object.assign(simNode, node);
                     simNode.x = node.position.x;
                     simNode.y = node.position.y;
+                    simNode.selected = false
                 });
             }
             if (cmd !== "on" && cmd !== "off") {

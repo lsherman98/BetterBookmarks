@@ -52,7 +52,7 @@ export function DefaultNode({
       return;
     }
     deleteNode(id);
-  }, []);
+  }, [deleteNode, id, toast]);
 
   return (
     <BaseNode selected={selected} className={id === targetNode ? "border-2 border-dashed border-blue-500" : ""}>

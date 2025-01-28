@@ -81,9 +81,14 @@ function App() {
   useEffect(() => {
     if (initialized && viewportInitialized) {
       toggle("on");
-      setCenter(0, 0, { zoom: 1 });
+      setTimeout(() => {
+        fitView({
+          padding: 0.2,
+          duration: 500,
+        });
+      }, 2000);
     }
-  }, [toggle, initialized, viewportInitialized, setCenter]);
+  }, [toggle, initialized, viewportInitialized, setCenter, fitView]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges(addEdge(params, edges)),
@@ -130,8 +135,22 @@ function App() {
         toggle("on");
       }
       dragEvents.stop(event, node);
+
+      const intersectingNode = getIntersectingNodes(node)
+        .map((n) => n.id)
+        .at(0);
+
+      if (intersectingNode && intersectingNode !== node.id) {
+        const newEdges = edges.map((edge) =>
+          edge.target === node.id ? { ...edge, source: intersectingNode } : edge
+        );
+        setEdges(newEdges);
+      }
+
+      toggle("off");
+      toggle("on");
     },
-    [toggle, dragEvents, isNodeSelected, setTargetNode]
+    [setTargetNode, isNodeSelected, dragEvents, getIntersectingNodes, toggle, edges, setEdges]
   );
 
   const handleDragOver = useCallback(
@@ -220,18 +239,25 @@ function App() {
           selectNodesOnDrag={false}
           elevateEdgesOnSelect={true}
           elevateNodesOnSelect={true}
+          selectionOnDrag={false}
           onNodeClick={handleNodeClick}
           onPaneClick={handlePaneClick}
           onDrop={onDrop}
           panOnDrag={true}
           zoomOnScroll={true}
+          maxZoom={1.3}
         >
           <Panel position="top-left">
             <SidebarTrigger className="-ml-1" />
-            <CrosshairIcon size={24} onClick={() => fitView({
-              padding: 0.2,
-              duration: 500
-            })}/>
+            <CrosshairIcon
+              size={24}
+              onClick={() =>
+                fitView({
+                  padding: 0.2,
+                  duration: 500,
+                })
+              }
+            />
             <br />
             {initialized && <div>force simulation is {isRunning() ? "running" : "stopped"}</div>}
           </Panel>

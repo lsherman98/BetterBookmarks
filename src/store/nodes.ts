@@ -4,7 +4,7 @@ export const initialNodes = [
     {
         id: '1',
         type: 'default',
-        data: { label: 'input' },
+        data: { label: 'root' },
         position: { x: 0, y: 0 },
     },
     {
