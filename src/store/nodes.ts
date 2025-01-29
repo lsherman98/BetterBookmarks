@@ -4,7 +4,7 @@ export const initialNodes = [
     {
         id: '1',
         type: 'default',
-        data: { label: 'root' },
+        data: { title: 'root', url: 'https://www.google.com' },
         position: { x: 0, y: 0 },
     },
     // {

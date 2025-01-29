@@ -75,7 +75,7 @@ export const NodeHeaderIcon = React.forwardRef<
   NodeHeaderIconProps
 >(({ className, ...props }, ref) => {
   return (
-    <span ref={ref} {...props} className={cn(className, "[&>*]:size-5")} />
+    <span ref={ref} {...props} className={cn(className, "[&>*]:size-4")} />
   );
 });
 

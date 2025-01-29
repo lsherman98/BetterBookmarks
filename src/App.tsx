@@ -15,19 +15,17 @@ import "@xyflow/react/dist/style.css";
 import "./App.css";
 import { useShallow } from "zustand/react/shallow";
 
-import { AppNode, AppState } from "@/store/types";
+import { AppState } from "@/store/types";
 import useStore from "@/store/store";
 import { useLayoutedElements } from "@/hooks/useLayoutedElements.js";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useCallback, useEffect, useRef } from "react";
-import { FlowSidebar } from "@/components/flow/FlowSidebar.jsx";
-import { FitViewTrigger } from "@/components/flow/FitViewTrigger.jsx";
+import { FlowToolbar } from "@/components/flow/AddNodePopOver.js";
 import { DefaultNode } from "@/components/flow/nodes/DefaultNode.jsx";
 import { useDnD } from "@/hooks/useDnD.jsx";
 import FloatingEdge from "@/components/flow/edges/FloatingEdge.jsx";
 import FloatingConnectionLine from "@/components/flow/edges/FloatingEdgeConnectionLine.jsx";
-import { DevTools } from "@/components/flow/DevTools.jsx";
-import { Button } from "./components/ui/button";
+import { DevTools } from "./components/flow/devtools";
 
 const selector = (state: AppState) => ({
   nodes: state.nodes,
@@ -35,11 +33,11 @@ const selector = (state: AppState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   setEdges: state.setEdges,
+  setNodes: state.setNodes,
   selectNode: state.selectNode,
   clearSelectedNodes: state.clearSelectedNodes,
   isNodeSelected: state.isNodeSelected,
   setTargetNode: state.setTargetNode,
-  addNodes: state.addNodes,
   isRunning: state.isRunning,
 });
 
@@ -64,13 +62,12 @@ function App() {
     onNodesChange,
     onEdgesChange,
     setEdges,
+    setNodes,
     selectNode,
     clearSelectedNodes,
     setTargetNode,
-    addNodes,
-    isRunning,
   } = useStore(useShallow(selector));
-  const [initialized, { toggle, }, dragEvents] = useLayoutedElements();
+  const [initialized, { toggle }, dragEvents] = useLayoutedElements();
   const { getIntersectingNodes, screenToFlowPosition, fitView, viewportInitialized, setCenter } =
     useReactFlow();
   const reactFlowWrapper = useRef(null);
@@ -94,7 +91,7 @@ function App() {
 
   const handleNodeClick = useCallback(
     (_, node) => {
-      toggle("off")
+      toggle("off");
       selectNode(node.id);
     },
     [selectNode, toggle]
@@ -106,7 +103,7 @@ function App() {
 
   const handleNodeDrag = useCallback(
     (event, node: Node) => {
-      toggle("off")
+      toggle("off");
       dragEvents.drag(event, node);
       const intersection = getIntersectingNodes(node)
         .map((n) => n.id)
@@ -145,7 +142,7 @@ function App() {
 
   const handleDragOver = useCallback(
     (event) => {
-      toggle("off")
+      toggle("off");
       event.preventDefault();
       event.dataTransfer.dropEffect = "move";
       const position = screenToFlowPosition({
@@ -176,7 +173,7 @@ function App() {
       if (!intersectingNode) {
         return;
       }
-      const newNode: AppNode = {
+      const newNode = {
         id: (nodes.length + 1).toString(),
         type: type,
         position,
@@ -188,11 +185,21 @@ function App() {
         target: newNode.id,
         type: "floating",
       };
-      addNodes([newNode]);
+      setNodes([...nodes, newNode]);
       setEdges([...edges, newEdge]);
       selectNode(newNode.id);
     },
-    [setTargetNode, screenToFlowPosition, getIntersectingNodes, nodes.length, type, addNodes, setEdges, edges, selectNode]
+    [
+      setTargetNode,
+      screenToFlowPosition,
+      getIntersectingNodes,
+      nodes,
+      type,
+      setNodes,
+      setEdges,
+      edges,
+      selectNode,
+    ]
   );
 
   return (
@@ -230,13 +237,14 @@ function App() {
           <DevTools />
           <Panel position="bottom-left">
             <SidebarTrigger className="-ml-1" />
-            <FitViewTrigger />
-            {initialized && <Button onClick={toggle}>{isRunning ? "running" : "stopped"}</Button>}
+            {/* {initialized && <Button onClick={toggle}>{isRunning ? "running" : "stopped"}</Button>} */}
+          </Panel>
+          <Panel position="top-center">
+            <FlowToolbar />
           </Panel>
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
         </ReactFlow>
       </div>
-      <FlowSidebar />
     </div>
   );
 }

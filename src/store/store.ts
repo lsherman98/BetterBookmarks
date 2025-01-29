@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { applyNodeChanges, applyEdgeChanges} from '@xyflow/react';
+import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
 
 import { initialNodes } from './nodes';
 import { initialEdges } from './edges';
@@ -9,6 +9,8 @@ import { type AppState } from './types';
 const useStore = create<AppState>((set, get) => ({
     nodes: initialNodes,
     edges: initialEdges,
+    targetNode: null,
+    isRunning: false,
     onNodesChange: (changes) => {
         set({
             nodes: applyNodeChanges(changes, get().nodes),
@@ -19,26 +21,31 @@ const useStore = create<AppState>((set, get) => ({
             edges: applyEdgeChanges(changes, get().edges),
         });
     },
+    getNodes: () => get().nodes,
+    getEdges: () => get().edges,
     setNodes: (nodes) => {
         set({ nodes });
     },
     setEdges: (edges) => {
         set({ edges });
     },
-    getNodes: () => get().nodes,
-    getEdges: () => get().edges,
+    getNode: (id) => get().nodes.find((node) => node.id === id),
+    addNode(node) {
+        set({
+            nodes: [...get().nodes, node],
+        });
+    },
+    addEdge: (edge) => {
+        set({
+            edges: [...get().edges, edge],
+        });
+    },
     deleteNode: (id) => {
         set({
             nodes: get().nodes.filter((node) => node.id !== id),
             edges: get().edges.filter((edge) => edge.source !== id && edge.target !== id),
         });
     },
-    addNodes: (nodes) => {
-        set({
-            nodes: [...get().nodes, ...nodes],
-        });
-    },
-    getNode: (id) => get().nodes.find((node) => node.id === id),
     selectNode: (id) => {
         set({
             nodes: get().nodes.map((node) => ({
@@ -56,11 +63,9 @@ const useStore = create<AppState>((set, get) => ({
         });
     },
     isNodeSelected: () => get().nodes.some((node) => node.selected),
-    targetNode: null,
     setTargetNode: (targetNode) => {
         set({ targetNode });
     },
-    isRunning: false,
     setIsRunning: (isRunning) => {
         set({ isRunning });
     },
