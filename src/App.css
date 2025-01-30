@@ -22,7 +22,7 @@ body,
 .react-flow__node-output,
 .react-flow__node-group {
   padding: 0;
-  width: 212px;
+  width: auto;
 }
 
 .react-flow__handle {

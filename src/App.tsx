@@ -20,7 +20,7 @@ import useStore from "@/store/store";
 import { useLayoutedElements } from "@/hooks/useLayoutedElements.js";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useCallback, useEffect, useRef } from "react";
-import { FlowToolbar } from "@/components/flow/AddNodePopOver.js";
+import { FlowToolbar } from "@/components/flow/FlowToolbar.js";
 import { DefaultNode } from "@/components/flow/nodes/DefaultNode.jsx";
 import { useDnD } from "@/hooks/useDnD.jsx";
 import FloatingEdge from "@/components/flow/edges/FloatingEdge.jsx";

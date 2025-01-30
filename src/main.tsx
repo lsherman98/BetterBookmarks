@@ -7,18 +7,21 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { ToastProvider } from "./components/ui/toast.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
 import { DnDProvider } from "./context/DnDContext.tsx";
+import { TooltipProvider } from "./components/ui/tooltip.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ToastProvider>
-      <Layout>
-        <ReactFlowProvider>
-          <DnDProvider>
-            <App />
-          </DnDProvider>
-        </ReactFlowProvider>
-      </Layout>
-      <Toaster />
+      <TooltipProvider>
+        <Layout>
+          <ReactFlowProvider>
+            <DnDProvider>
+              <App />
+            </DnDProvider>
+          </ReactFlowProvider>
+        </Layout>
+        <Toaster />
+      </TooltipProvider>
     </ToastProvider>
   </StrictMode>
 );

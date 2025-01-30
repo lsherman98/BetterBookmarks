@@ -21,7 +21,7 @@ const selector = (state: AppState) => ({
   addEdge: state.addEdge,
 });
 
-export default function NodeTools({ nodeId, isEditing, setIsEditing }: NodeToolbarProps) {
+export default function NodeActions({ nodeId, isEditing, setIsEditing }: NodeToolbarProps) {
   const { nodes, deleteNode, addNode, addEdge } = useStore(useShallow(selector));
 
   const handleDeleteNode = useCallback(() => {

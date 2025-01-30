@@ -11,8 +11,9 @@ import { ExternalLink, Link } from "lucide-react";
 import { AppState, NodeData } from "@/store/types";
 import useStore from "@/store/store";
 import { useShallow } from "zustand/react/shallow";
-import Toolbar from "../NodeTools";
+import Toolbar from "../NodeActions";
 import { useState } from "react";
+import DefaultNodeEditForm from "./DefaultNodeEditForm";
 
 const selector = (state: AppState) => ({
   deleteNode: state.deleteNode,
@@ -48,7 +49,7 @@ export function DefaultNode({ selected, data }: NodeProps<Node<NodeData>>) {
       </NodeHeader>
       <Toolbar nodeId={id} isEditing={isEditing} setIsEditing={setIsEditing} />
       {showContent ? data.url : <Placeholder />}
-      {isEditing && <div>Editing</div>}
+      {isEditing && <DefaultNodeEditForm />}
       <Handle type="source" position={Position.Right} />
       <Handle type="target" position={Position.Left} />
     </BaseNode>
