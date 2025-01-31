@@ -9,8 +9,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 export function FlowToolbar() {
   return (
     <div className="mt-2 flex gap-2 bg-white h-[48px] w-[248px] px-4 py-2 shadow-lg rounded-xl border border-grey-400 items-center">
-      <FitViewTrigger />
       <AddNodePopOver />
+      <FitViewTrigger />
       <Separator orientation="vertical" className="h-6" />
       <ShareButton />
       <ForkButton />

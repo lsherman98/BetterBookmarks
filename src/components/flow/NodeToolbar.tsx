@@ -1,6 +1,6 @@
-import { Edge, NodeToolbar, Position } from "@xyflow/react";
+import { Edge, NodeToolbar as RFNodeToolbar, Position, useReactFlow } from "@xyflow/react";
 import { Button } from "../ui/button";
-import { PlusIcon, TextCursorInput, Trash } from "lucide-react";
+import { PlusIcon, Save, TextCursorInput, Trash } from "lucide-react";
 import { AppNode, AppState } from "@/store/types";
 import useStore from "@/store/store";
 import { useShallow } from "zustand/react/shallow";
@@ -8,9 +8,10 @@ import { useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 
 type NodeToolbarProps = {
-  nodeId: string | null;
+  id: string | null;
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
+  position: { x: number; y: number };
 };
 
 const selector = (state: AppState) => ({
@@ -21,22 +22,23 @@ const selector = (state: AppState) => ({
   addEdge: state.addEdge,
 });
 
-export default function NodeActions({ nodeId, isEditing, setIsEditing }: NodeToolbarProps) {
+export default function NodeToolbar({ id, isEditing, setIsEditing, position }: NodeToolbarProps) {
   const { nodes, deleteNode, addNode, addEdge } = useStore(useShallow(selector));
+  const { setCenter } = useReactFlow();
 
   const handleDeleteNode = useCallback(() => {
-    if (!nodeId) {
+    if (!id) {
       toast({
         variant: "destructive",
         description: "Something went wrong.",
       });
       return;
     }
-    deleteNode(nodeId);
-  }, [deleteNode, nodeId]);
+    deleteNode(id);
+  }, [deleteNode, id]);
 
   const handleAddNode = useCallback(() => {
-    if (!nodeId) {
+    if (!id) {
       toast({
         variant: "destructive",
         description: "Something went wrong.",
@@ -46,41 +48,51 @@ export default function NodeActions({ nodeId, isEditing, setIsEditing }: NodeToo
     const newNode: AppNode = {
       id: (nodes.length + 1).toString(),
       type: "default",
-      data: {},
+      data: { isNew: true },
       position: { x: 0, y: 0 },
     };
     const newEdge: Edge = {
-      id: `${nodeId}-${newNode.id}`,
-      source: nodeId,
+      id: `${id}-${newNode.id}`,
+      source: id,
       target: newNode.id,
       type: "floating",
     };
     addNode(newNode);
     addEdge(newEdge);
-  }, [addEdge, addNode, nodeId, nodes.length]);
+  }, [addEdge, addNode, id, nodes.length]);
 
   const handleEditNode = useCallback(() => {
-    if (!nodeId) {
+    if (!id) {
       toast({
         variant: "destructive",
         description: "Something went wrong.",
       });
       return;
     }
+    const editState = !isEditing;
+    if (editState) {
+      setCenter(position.x, position.y, { duration: 500, zoom: 1.2 });
+    }
     setIsEditing(!isEditing);
-  }, [isEditing, nodeId, setIsEditing]);
+  }, [id, isEditing, setIsEditing, setCenter, position.x, position.y]);
 
   return (
-    <NodeToolbar position={Position.Bottom} className="space-x-2">
+    <RFNodeToolbar position={Position.Bottom} className="space-x-2">
       <Button variant="outline" size="icon" onClick={handleAddNode}>
         <PlusIcon />
       </Button>
-      <Button variant="outline" size="icon" onClick={handleEditNode}>
-        <TextCursorInput />
-      </Button>
+      {isEditing ? (
+        <Button size="icon" onClick={handleEditNode}>
+          <Save />
+        </Button>
+      ) : (
+        <Button variant="outline" size="icon" onClick={handleEditNode}>
+          <TextCursorInput />
+        </Button>
+      )}
       <Button variant="outline" size="icon" onClick={handleDeleteNode}>
         <Trash />
       </Button>
-    </NodeToolbar>
+    </RFNodeToolbar>
   );
 }

@@ -8,8 +8,12 @@ import {
 export type AppNode = Node
 
 export type NodeData = {
+    isNew?: boolean;
+
     title: string;
     url: string;
+    description?: string;
+    tags?: string[];
 }
 
 export type AppState = {
@@ -24,6 +28,7 @@ export type AppState = {
     getNode: (id: string) => AppNode | undefined;
     addNode: (node: AppNode) => void;
     addEdge: (edge: Edge) => void;
+    updateNode: (id: string, data: NodeData) => void;
     deleteNode: (id: string) => void;
     selectNode: (id: string) => void;
     clearSelectedNodes: () => void;

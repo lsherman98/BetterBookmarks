@@ -40,6 +40,11 @@ const useStore = create<AppState>((set, get) => ({
             edges: [...get().edges, edge],
         });
     },
+    updateNode: (id, data) => {
+        set({
+            nodes: get().nodes.map((node) => (node.id === id ? { ...node, data } : node)),
+        });
+    },
     deleteNode: (id) => {
         set({
             nodes: get().nodes.filter((node) => node.id !== id),
@@ -49,8 +54,8 @@ const useStore = create<AppState>((set, get) => ({
     selectNode: (id) => {
         set({
             nodes: get().nodes.map((node) => ({
-                ...node,
-                selected: node.id === id,
+            ...node,
+            selected: node.id === id ? true : false,
             })),
         });
     },

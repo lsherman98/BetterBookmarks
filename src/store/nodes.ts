@@ -3,8 +3,8 @@ import { type AppNode } from './types';
 export const initialNodes = [
     {
         id: '1',
-        type: 'default',
-        data: { title: 'root', url: 'https://www.google.com' },
+        type: 'root',
+        data: {},
         position: { x: 0, y: 0 },
     },
     // {

@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -13,6 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TagsInput } from "@/components/ui/extension/tags-input";
+import { NodeData } from "@/store/types";
+
+type DefaultNodeEditFormProps = {
+  handleUpdateNode: (data: NodeData) => void;
+  data: NodeData;
+};
 
 const formSchema = z.object({
   title: z.string().max(48),
@@ -21,31 +26,30 @@ const formSchema = z.object({
   tags: z.array(z.string()).nonempty("Please at least one item").optional().default([""]),
 });
 
-export default function DefaultNodeEditForm() {
+export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultNodeEditFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      tags: ["test"],
+      title: data.title,
+      url: data.url,
+      description: data.description,
+      tags: data.tags || [],
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-    }
+  function onChange(values: z.infer<typeof formSchema>) {
+    const data: NodeData = {
+      title: values.title,
+      url: values.url,
+      description: values.description,
+      tags: values.tags,
+    };
+    handleUpdateNode(data);
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-3xl mx-auto py-6">
+      <form onChange={form.handleSubmit(onChange)} className="space-y-4 max-w-3xl mx-auto py-6">
         <FormField
           control={form.control}
           name="title"
