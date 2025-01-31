@@ -41,19 +41,11 @@ export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultN
     shouldFocusError: false,
   });
 
-  function onChange(values: z.infer<typeof formSchema>) {
-    const data: NodeData = {
-      title: values.title,
-      url: values.url,
-      description: values.description,
-      tags: values.tags,
-    };
-    handleUpdateNode(data);
-  }
+  const onChange = (values: z.infer<typeof formSchema>) => handleUpdateNode(values);
 
   return (
     <Form {...form}>
-      <form onChange={form.handleSubmit(onChange)} className="space-y-4 max-w-3xl mx-auto py-6">
+      <form onChange={form.handleSubmit(onChange)} className="space-y-4 max-w-3xl mx-auto py-2">
         <FormField
           control={form.control}
           name="url"

@@ -33,18 +33,7 @@ const AddNodePopOver = () => {
         <div
           className={`cursor-pointer flex items-center justify-center hover:scale-110 transition-transform transform`}
         >
-          {isOpen ? (
-            <X size={28} />
-          ) : (
-            <Tooltip delayDuration={400}>
-              <TooltipTrigger asChild>
-                <Plus size={28} />
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={12}>
-                Add Node
-              </TooltipContent>
-            </Tooltip>
-          )}
+          {isOpen ? <X size={28} /> : <TooltipIcon icon={<Plus size={28} />} tooltip="Add Node" />}
         </div>
       </PopoverTrigger>
       <PopoverContent
@@ -70,53 +59,45 @@ const AddNodePopOver = () => {
 const FitViewTrigger = () => {
   const { fitView } = useReactFlow();
   return (
-    <Tooltip delayDuration={400}>
-      <TooltipTrigger asChild>
-        <div
-          className="cursor-pointer flex items-center justify-center hover:scale-110 transition-transform transform"
-          onClick={() => {
-            fitView({
-              padding: 0.2,
-              duration: 500,
-            });
-          }}
-        >
-          <CrosshairIcon size={24} />
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="bottom" sideOffset={14}>
-        Fit View
-      </TooltipContent>
-    </Tooltip>
+    <TooltipIcon
+      icon={<CrosshairIcon size={24} />}
+      tooltip="Fit View"
+      onClick={() => {
+        fitView({
+          padding: 0.2,
+          duration: 500,
+        });
+      }}
+    />
   );
 };
 
 const ShareButton = () => {
-  return (
-    <Tooltip delayDuration={400}>
-      <TooltipTrigger asChild>
-        <div className="cursor-pointer flex items-center justify-center hover:scale-110 transition-transform transform">
-          <Share2 size={24} />
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="bottom" sideOffset={14}>
-        Share
-      </TooltipContent>
-    </Tooltip>
-  );
+  return <TooltipIcon icon={<Share2 size={24} />} tooltip="Share" />;
 };
 
 const ForkButton = () => {
-  return (
-    <Tooltip delayDuration={400}>
-      <TooltipTrigger asChild>
-        <div className="cursor-pointer flex items-center justify-center hover:scale-110 transition-transform transform">
-          <GitFork size={24} />
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="bottom" sideOffset={14}>
-        Fork
-      </TooltipContent>
-    </Tooltip>
-  );
+  return <TooltipIcon icon={<GitFork size={24} />} tooltip="Fork" />;
 };
+
+type ToolbarButtonProps = {
+  icon: React.ReactNode;
+  tooltip: string;
+  onClick?: () => void;
+};
+
+const TooltipIcon = ({ icon, tooltip, onClick }: ToolbarButtonProps) => (
+  <Tooltip delayDuration={400}>
+    <TooltipTrigger asChild>
+      <div
+        className="cursor-pointer flex items-center justify-center hover:scale-110 transition-transform transform"
+        onClick={onClick}
+      >
+        {icon}
+      </div>
+    </TooltipTrigger>
+    <TooltipContent side="bottom" sideOffset={14}>
+      {tooltip}
+    </TooltipContent>
+  </Tooltip>
+);

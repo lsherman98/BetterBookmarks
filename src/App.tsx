@@ -3,9 +3,7 @@ import {
   BackgroundVariant,
   Panel,
   ReactFlow,
-  type NodeTypes,
   type DefaultEdgeOptions,
-  EdgeTypes,
   useReactFlow,
   addEdge,
   Connection,
@@ -21,12 +19,10 @@ import { useLayoutedElements } from "@/hooks/useLayoutedElements.js";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useCallback, useEffect, useRef } from "react";
 import { FlowToolbar } from "@/components/flow/FlowToolbar.js";
-import { DefaultNode } from "@/components/flow/nodes/DefaultNode/DefaultNode.js";
 import { useDnD } from "@/hooks/useDnD.jsx";
-import FloatingEdge from "@/components/flow/edges/FloatingEdge.jsx";
 import FloatingConnectionLine from "@/components/flow/edges/FloatingEdgeConnectionLine.jsx";
 import { DevTools } from "./components/flow/devtools";
-import { RootNode } from "./components/flow/nodes/RootNode/RootNode";
+import { edgeTypes, nodeTypes } from "./lib/data";
 
 const selector = (state: AppState) => ({
   nodes: state.nodes,
@@ -47,15 +43,6 @@ const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 const defaultEdgeOptions: DefaultEdgeOptions = {};
 
 const proOptions = { hideAttribution: true };
-
-const nodeTypes: NodeTypes = {
-  default: DefaultNode,
-  root: RootNode,
-};
-
-const edgeTypes: EdgeTypes = {
-  floating: FloatingEdge,
-};
 
 function App() {
   const {
