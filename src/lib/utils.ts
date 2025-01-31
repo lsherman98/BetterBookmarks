@@ -1,9 +1,17 @@
+import { toast } from "@/hooks/use-toast";
 import { Position } from "@xyflow/react";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+export function newToast(varient: "destructive" | "default", message: string) {
+  toast({
+    variant: varient,
+    description: message,
+  });
 }
 
 // returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge

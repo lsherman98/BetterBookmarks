@@ -13,10 +13,10 @@ import { useShallow } from "zustand/react/shallow";
 import Toolbar from "../../NodeToolbar";
 import { useEffect, useState } from "react";
 import useStore from "@/store/store";
-import { toast } from "@/hooks/use-toast";
 import DefaultNodeEditForm from "./DefaultNodeEditForm";
 import DefaultNodeDataDisplay from "./DefaultNodeData";
 import { Placeholder } from "../../Placeholder";
+import { newToast } from "@/lib/utils";
 
 const selector = (state: AppState) => ({
   deleteNode: state.deleteNode,
@@ -44,20 +44,17 @@ export function DefaultNode({
 
   const handleUpdateNode = (data: NodeData) => {
     if (!id) {
-      toast({
-        variant: "destructive",
-        description: "Something went wrong.",
-      });
+      newToast("destructive", "Something went wrong.");
       return;
     }
     updateNode(id, data);
   };
 
   useEffect(() => {
-    if (!selected) {
+    if (!selected && isEditing) {
       setIsEditing(false);
     }
-  }, [selected]);
+  }, [selected, isEditing]);
 
   useEffect(() => {
     if (data.isNew) {
@@ -70,7 +67,7 @@ export function DefaultNode({
   return (
     <BaseNode
       selected={selected}
-      className={`min-w-[16rem] max-w-[16rem] ${
+      className={`min-w-[12rem] max-w-[16rem] ${
         id === targetNode ? "border-2 border-dashed border-blue-500" : ""
       }`}
     >

@@ -92,7 +92,7 @@ function App() {
   );
 
   const handleNodeClick = useCallback(
-    (_, node) => {
+    (_, node: Node) => {
       toggle("off");
       selectNode(node.id);
     },
@@ -152,7 +152,7 @@ function App() {
         y: event.clientY,
       });
       const intersectingNode = getIntersectingNodes(
-        { ...position, width: 150, height: 109 },
+        { ...position, width: 192, height: 135 },
         true
       ).at(0);
       setTargetNode(intersectingNode?.id ?? null);

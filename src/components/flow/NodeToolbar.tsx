@@ -5,7 +5,7 @@ import { AppNode, AppState } from "@/store/types";
 import useStore from "@/store/store";
 import { useShallow } from "zustand/react/shallow";
 import { useCallback } from "react";
-import { toast } from "@/hooks/use-toast";
+import { newToast } from "@/lib/utils";
 
 type NodeToolbarProps = {
   id: string | null;
@@ -28,10 +28,7 @@ export default function NodeToolbar({ id, isEditing, setIsEditing, position }: N
 
   const handleDeleteNode = useCallback(() => {
     if (!id) {
-      toast({
-        variant: "destructive",
-        description: "Something went wrong.",
-      });
+      newToast("destructive", "Something went wrong.");
       return;
     }
     deleteNode(id);
@@ -39,10 +36,7 @@ export default function NodeToolbar({ id, isEditing, setIsEditing, position }: N
 
   const handleAddNode = useCallback(() => {
     if (!id) {
-      toast({
-        variant: "destructive",
-        description: "Something went wrong.",
-      });
+      newToast("destructive", "Something went wrong.");
       return;
     }
     const newNode: AppNode = {
@@ -63,10 +57,7 @@ export default function NodeToolbar({ id, isEditing, setIsEditing, position }: N
 
   const handleEditNode = useCallback(() => {
     if (!id) {
-      toast({
-        variant: "destructive",
-        description: "Something went wrong.",
-      });
+      newToast("destructive", "Something went wrong.");
       return;
     }
     const editState = !isEditing;

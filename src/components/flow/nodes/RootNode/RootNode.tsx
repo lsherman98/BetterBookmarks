@@ -22,7 +22,7 @@ import { Info, PlusIcon, Target } from "lucide-react";
 import { Placeholder } from "../../Placeholder";
 import { Button } from "@/components/ui/button";
 import { useCallback } from "react";
-import { toast } from "@/hooks/use-toast";
+import { newToast } from "@/lib/utils";
 
 const selector = (state: AppState) => ({
   nodes: state.nodes,
@@ -38,10 +38,7 @@ export function RootNode({ selected, type }: NodeProps) {
 
   const handleAddNode = useCallback(() => {
     if (!id) {
-      toast({
-        variant: "destructive",
-        description: "Something went wrong.",
-      });
+      newToast("destructive", "Something went wrong.");
       return;
     }
     const newNode: AppNode = {
@@ -63,7 +60,7 @@ export function RootNode({ selected, type }: NodeProps) {
   return (
     <BaseNode
       selected={selected}
-      className={`min-w-[16rem] max-w-[16rem] ${
+      className={`min-w-[12rem] max-w-[16rem] ${
         id === targetNode ? "border-2 border-dashed border-blue-500" : ""
       }`}
     >

@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TagsInput } from "@/components/ui/extension/tags-input";
 import { NodeData } from "@/store/types";
+import { WandSparkles } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type DefaultNodeEditFormProps = {
   handleUpdateNode: (data: NodeData) => void;
@@ -21,20 +23,22 @@ type DefaultNodeEditFormProps = {
 
 const formSchema = z.object({
   title: z.string().max(48),
-  url: z.string(),
+  url: z.string().url({ message: "Please enter a valid URL" }),
   description: z.string().optional(),
-  tags: z.array(z.string()).nonempty("Please at least one item").optional().default([""]),
+  tags: z.array(z.string()).optional().default([""]),
 });
 
 export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultNodeEditFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: data.title,
-      url: data.url,
-      description: data.description,
+      title: data.title || "",
+      url: data.url || "",
+      description: data.description || "",
       tags: data.tags || [],
     },
+    mode: "onBlur",
+    shouldFocusError: false,
   });
 
   function onChange(values: z.infer<typeof formSchema>) {
@@ -52,33 +56,45 @@ export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultN
       <form onChange={form.handleSubmit(onChange)} className="space-y-4 max-w-3xl mx-auto py-6">
         <FormField
           control={form.control}
-          name="title"
+          name="url"
           render={({ field }) => (
-            <FormItem className="space-y-1 text-left">
-              <FormLabel className="text-xs">Title</FormLabel>
+            <FormItem className="space-y-1 text-left nodrag">
+              <FormLabel className="text-xs">URL</FormLabel>
               <FormControl>
-                <Input className="h-6 text-xs" placeholder="<Placeholder>" type="text" {...field} />
+                <div className="flex items-center">
+                  <Input
+                    className="h-6 text-xs"
+                    placeholder="www.google.com"
+                    type="text"
+                    {...field}
+                  />
+                  {field.value && (
+                    <Tooltip delayDuration={400}>
+                      <TooltipTrigger asChild>
+                        <WandSparkles size={16} className="text-blue-500 ml-2" />
+                      </TooltipTrigger>
+                      <TooltipContent className="text-xs" side="right" sideOffset={8}>
+                        Auto Populate
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
               </FormControl>
-              <FormMessage className="text-xs" />
+              <FormMessage className="text-xs text-right" />
             </FormItem>
           )}
         />
 
         <FormField
           control={form.control}
-          name="url"
+          name="title"
           render={({ field }) => (
-            <FormItem className="space-y-1 text-left">
-              <FormLabel className="text-xs">URL</FormLabel>
+            <FormItem className="space-y-1 text-left nodrag">
+              <FormLabel className="text-xs">Title</FormLabel>
               <FormControl>
-                <Input
-                  className="h-6 text-xs"
-                  placeholder="www.google.com"
-                  type="text"
-                  {...field}
-                />
+                <Input className="h-6 text-xs" placeholder="<Placeholder>" type="text" {...field} />
               </FormControl>
-              <FormMessage className="text-xs" />
+              <FormMessage className="text-xs text-right" />
             </FormItem>
           )}
         />
@@ -87,7 +103,7 @@ export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultN
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem className="space-y-1 text-left">
+            <FormItem className="space-y-1 text-left nodrag">
               <FormLabel className="text-xs">Description</FormLabel>
               <FormControl>
                 <Textarea
@@ -96,7 +112,7 @@ export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultN
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-xs" />
+              <FormMessage className="text-xs text-right" />
             </FormItem>
           )}
         />
@@ -105,7 +121,7 @@ export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultN
           control={form.control}
           name="tags"
           render={({ field }) => (
-            <FormItem className="space-y-1 text-left">
+            <FormItem className="space-y-1 text-left nodrag">
               <FormLabel className="text-xs">Tags</FormLabel>
               <FormControl>
                 <TagsInput
@@ -115,7 +131,7 @@ export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultN
                   className="text-xs"
                 />
               </FormControl>
-              <FormMessage className="text-xs" />
+              <FormMessage className="text-xs text-right" />
             </FormItem>
           )}
         />
