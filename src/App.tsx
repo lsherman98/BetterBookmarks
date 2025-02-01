@@ -56,21 +56,23 @@ function App() {
     setTargetNode,
   } = useStore(useShallow(selector));
   const [initialized, { toggle }, dragEvents] = useLayoutedElements();
-  const { getIntersectingNodes, screenToFlowPosition, fitView, viewportInitialized, setCenter } =
+  const { getIntersectingNodes, screenToFlowPosition, fitView, viewportInitialized} =
     useReactFlow();
   const reactFlowWrapper = useRef(null);
   const [type] = useDnD();
 
   useEffect(() => {
     if (initialized && viewportInitialized) {
+      toggle("on");
       setTimeout(() => {
+        toggle("off");
         fitView({
           padding: 0.2,
           duration: 500,
         });
-      }, 100);
+      }, 2000);
     }
-  }, [toggle, initialized, viewportInitialized, setCenter, fitView]);
+  }, [toggle, initialized, viewportInitialized, fitView]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges(addEdge(params, edges)),
@@ -79,10 +81,9 @@ function App() {
 
   const handleNodeClick = useCallback(
     (_, node: Node) => {
-      toggle("off");
       selectNode(node.id);
     },
-    [selectNode, toggle]
+    [selectNode]
   );
 
   const handlePaneClick = useCallback(() => {
@@ -91,7 +92,6 @@ function App() {
 
   const handleNodeDrag = useCallback(
     (event, node: Node) => {
-      toggle("off");
       dragEvents.drag(event, node);
       const intersection = getIntersectingNodes(node)
         .map((n) => n.id)
@@ -99,7 +99,7 @@ function App() {
       if (!intersection) setTargetNode(null);
       else setTargetNode(intersection);
     },
-    [dragEvents, getIntersectingNodes, setTargetNode, toggle]
+    [dragEvents, getIntersectingNodes, setTargetNode]
   );
 
   const handleNodeDragStart = useCallback(
@@ -113,7 +113,6 @@ function App() {
     (event, node: Node) => {
       setTargetNode(null);
       dragEvents.stop(event, node);
-
       const intersectingNode = getIntersectingNodes(node)
         .map((n) => n.id)
         .at(0);
@@ -130,7 +129,6 @@ function App() {
 
   const handleDragOver = useCallback(
     (event) => {
-      toggle("off");
       event.preventDefault();
       event.dataTransfer.dropEffect = "move";
       const position = screenToFlowPosition({
@@ -143,7 +141,7 @@ function App() {
       ).at(0);
       setTargetNode(intersectingNode?.id ?? null);
     },
-    [getIntersectingNodes, screenToFlowPosition, setTargetNode, toggle]
+    [getIntersectingNodes, screenToFlowPosition, setTargetNode]
   );
 
   const onDrop = useCallback(
@@ -228,7 +226,6 @@ function App() {
           {/* <DevTools /> */}
           <Panel position="top-left">
             <SidebarTrigger className="-ml-1" />
-            {/* {initialized && <Button onClick={toggle}>{isRunning ? "running" : "stopped"}</Button>} */}
           </Panel>
           <Panel position="top-center">
             <FlowToolbar />

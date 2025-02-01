@@ -12,8 +12,8 @@ import { useShallow } from "zustand/react/shallow";
 
 const simulation = forceSimulation()
   .force("charge", forceManyBody().strength(-2000))
-  .force("x", forceX().x(0).strength(0.05))
-  .force("y", forceY().y(0).strength(0.05))
+  .force("x", forceX().x(0).strength(0.02))
+  .force("y", forceY().y(0).strength(0.02))
   .force("collide", collide())
   .alphaTarget(0.005)
   .stop();
@@ -39,12 +39,14 @@ export const useLayoutedElements = (): any => {
         setNodes((nodes) =>
           nodes.map((n) => (n.id === node.id ? { ...n, zIndex: 1 } : { ...n, zIndex: 0 }))
         );
+        toggle("off");
       },
       drag: (_event, node) => {
         draggingNodeRef.current = node;
       },
       stop: () => {
         draggingNodeRef.current = null;
+        toggle("on");
       },
     }),
     [setNodes]
@@ -67,8 +69,8 @@ export const useLayoutedElements = (): any => {
       "link",
       forceLink(edges)
         .id((d) => d.id)
-        .strength(0.05)
-        .distance(100)
+        .strength(0.5)
+        .distance(500)
     );
 
     // The tick function is called every animation frame while the simulation is
@@ -90,7 +92,7 @@ export const useLayoutedElements = (): any => {
       });
 
       simulation.tick();
-      setNodes(
+      setNodes(() =>
         nodes.map((node) => ({
           ...node,
           position: {

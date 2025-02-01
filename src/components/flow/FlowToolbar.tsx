@@ -6,6 +6,7 @@ import { Separator } from "../ui/separator";
 import { useState } from "react";
 import { customNodes } from "@/lib/data";
 import { TooltipIcon } from "./TooltipIcon";
+import { useLayoutedElements } from "@/hooks/useLayoutedElements";
 
 export function FlowToolbar() {
   return (
@@ -68,15 +69,20 @@ const AddNodePopOver = () => {
 
 const FitViewTrigger = () => {
   const { fitView } = useReactFlow();
+  const [, { toggle },] = useLayoutedElements();
   return (
     <TooltipIcon
       icon={<CrosshairIcon size={24} />}
       tooltip="Fit View"
       onClick={() => {
-        fitView({
-          padding: 0.2,
-          duration: 500,
-        });
+        toggle("on")
+        setTimeout(() => {
+          toggle("off")
+          fitView({
+            padding: 0.2,
+            duration: 500,
+          });
+        }, 300);
       }}
     />
   );
