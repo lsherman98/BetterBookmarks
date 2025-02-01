@@ -15,7 +15,6 @@ import { useEffect, useState } from "react";
 import useStore from "@/store/store";
 import { Placeholder } from "../Placeholder";
 import { newToast } from "@/lib/utils";
-import React from "react";
 import { customNodes } from "@/lib/data";
 
 const selector = (state: AppState) => ({
@@ -25,7 +24,7 @@ const selector = (state: AppState) => ({
   selectNode: state.selectNode,
 });
 
-export function DefaultNode({
+export function CustomNodeWrapper({
   selected,
   type,
   positionAbsoluteX,
@@ -74,7 +73,7 @@ export function DefaultNode({
     >
       <NodeHeader className="-mx-3 border-b">
         <NodeHeaderIcon>{<component.icon />}</NodeHeaderIcon>
-        <NodeHeaderTitle>{data.title}</NodeHeaderTitle>
+        <NodeHeaderTitle>{component.name}</NodeHeaderTitle>
         <NodeHeaderActions>
           <NodeHeaderAction onClick={handleOpenURL} variant="ghost" label="Delete node">
             <ExternalLink />

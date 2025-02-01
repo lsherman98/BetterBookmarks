@@ -23,11 +23,12 @@ interface TagsInputProps extends React.HTMLAttributes<HTMLDivElement> {
   placeholder?: string;
   maxItems?: number;
   minItems?: number;
+  disabled?: boolean;
 }
 
 interface TagsInputContextProps {
   value: string[];
-  onValueChange: (value: any) => void;
+  onValueChange: (value: string[]) => void;
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   activeIndex: number;
@@ -45,11 +46,12 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
       placeholder,
       maxItems,
       minItems,
+      disabled,
       className,
       dir,
       ...props
     },
-    ref,
+    ref
   ) => {
     const [activeIndex, setActiveIndex] = React.useState(-1);
     const [inputValue, setInputValue] = React.useState("");
@@ -67,7 +69,7 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
           onValueChange([...value, val]);
         }
       },
-      [value],
+      [value]
     );
 
     const RemoveValue = React.useCallback(
@@ -76,7 +78,7 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
           onValueChange(value.filter((item) => item !== val));
         }
       },
-      [value],
+      [value]
     );
 
     const handlePaste = React.useCallback(
@@ -97,7 +99,7 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
         onValueChange(newValue);
         setInputValue("");
       },
-      [value],
+      [value]
     );
 
     const handleSelect = React.useCallback(
@@ -105,13 +107,13 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
         const target = e.currentTarget;
         const selection = target.value.substring(
           target.selectionStart ?? 0,
-          target.selectionEnd ?? 0,
+          target.selectionEnd ?? 0
         );
 
         setSelectedValue(selection);
         setIsValueSelected(selection === inputValue);
       },
-      [inputValue],
+      [inputValue]
     );
 
     // ? suggest : a refactor rather then using a useEffect
@@ -132,6 +134,14 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
       VerifyDisable();
     }, [value]);
 
+    React.useEffect(() => {
+      if (disabled) {
+        setDisableInput(true);
+      } else {
+        setDisableInput(false);
+      }
+    }, [disabled]);
+
     // ? check: Under build , default option support
     // * support : for the uncontrolled && controlled ui
 
@@ -145,24 +155,18 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
         e.stopPropagation();
 
         const moveNext = () => {
-          const nextIndex =
-            activeIndex + 1 > value.length - 1 ? -1 : activeIndex + 1;
+          const nextIndex = activeIndex + 1 > value.length - 1 ? -1 : activeIndex + 1;
           setActiveIndex(nextIndex);
         };
 
         const movePrev = () => {
-          const prevIndex =
-            activeIndex - 1 < 0 ? value.length - 1 : activeIndex - 1;
+          const prevIndex = activeIndex - 1 < 0 ? value.length - 1 : activeIndex - 1;
           setActiveIndex(prevIndex);
         };
 
         const moveCurrent = () => {
           const newIndex =
-            activeIndex - 1 <= 0
-              ? value.length - 1 === 0
-                ? -1
-                : 0
-              : activeIndex - 1;
+            activeIndex - 1 <= 0 ? (value.length - 1 === 0 ? -1 : 0) : activeIndex - 1;
           setActiveIndex(newIndex);
         };
         const target = e.currentTarget;
@@ -224,7 +228,7 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
             break;
         }
       },
-      [activeIndex, value, inputValue, RemoveValue],
+      [activeIndex, value, inputValue, RemoveValue]
     );
 
     const mousePreventDefault = React.useCallback((e: React.MouseEvent) => {
@@ -232,12 +236,9 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
       e.stopPropagation();
     }, []);
 
-    const handleChange = React.useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.currentTarget.value);
-      },
-      [],
-    );
+    const handleChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(e.currentTarget.value);
+    }, []);
 
     return (
       <TagInputContext.Provider
@@ -259,7 +260,7 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
             {
               "focus-within:ring-ring": activeIndex === -1,
             },
-            className,
+            className
           )}
         >
           {value.map((item, index) => (
@@ -269,7 +270,7 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
               aria-disabled={disableButton}
               data-active={activeIndex === index}
               className={cn(
-                "relative px-1 rounded flex items-center gap-1 data-[active='true']:ring-2 data-[active='true']:ring-muted-foreground truncate aria-disabled:opacity-50 aria-disabled:cursor-not-allowed",
+                "relative px-1 rounded flex items-center gap-1 data-[active='true']:ring-2 data-[active='true']:ring-muted-foreground truncate aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
               )}
               variant={"secondary"}
             >
@@ -301,13 +302,13 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
             onClick={() => setActiveIndex(-1)}
             className={cn(
               "outline-0 border-none h-7 min-w-fit flex-1 focus-visible:outline-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-0 placeholder:text-muted-foreground px-1",
-              activeIndex !== -1 && "caret-transparent",
+              activeIndex !== -1 && "caret-transparent"
             )}
           />
         </div>
       </TagInputContext.Provider>
     );
-  },
+  }
 );
 
 TagsInput.displayName = "TagsInput";

@@ -21,7 +21,6 @@ import { useCallback, useEffect, useRef } from "react";
 import { FlowToolbar } from "@/components/flow/FlowToolbar.js";
 import { useDnD } from "@/hooks/useDnD.jsx";
 import FloatingConnectionLine from "@/components/flow/edges/FloatingEdgeConnectionLine.jsx";
-import { DevTools } from "./components/flow/devtools";
 import { edgeTypes, nodeTypes } from "./lib/data";
 
 const selector = (state: AppState) => ({
@@ -150,6 +149,9 @@ function App() {
   const onDrop = useCallback(
     (event) => {
       event.preventDefault();
+      if (event.dataTransfer.files.length > 0) {
+        return;
+      }
       setTargetNode(null);
       const position = screenToFlowPosition({
         x: event.clientX,
@@ -223,8 +225,8 @@ function App() {
           zoomOnScroll={true}
           maxZoom={1.3}
         >
-          <DevTools />
-          <Panel position="bottom-left">
+          {/* <DevTools /> */}
+          <Panel position="top-left">
             <SidebarTrigger className="-ml-1" />
             {/* {initialized && <Button onClick={toggle}>{isRunning ? "running" : "stopped"}</Button>} */}
           </Panel>

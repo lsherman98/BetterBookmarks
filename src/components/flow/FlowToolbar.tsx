@@ -1,15 +1,17 @@
 import { useDnD } from "@/hooks/useDnD";
-import { CrosshairIcon, GitFork, Link, Plus, Share2, X } from "lucide-react";
+import { CrosshairIcon, GitFork, Plus, Search, Share2, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { useReactFlow } from "@xyflow/react";
 import { Separator } from "../ui/separator";
 import { useState } from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { customNodes } from "@/lib/data";
+import { TooltipIcon } from "./TooltipIcon";
 
 export function FlowToolbar() {
   return (
-    <div className="mt-2 flex gap-2 bg-white h-[48px] w-[248px] px-4 py-2 shadow-lg rounded-xl border border-grey-400 items-center">
+    <div className="mt-2 flex gap-2 bg-white h-[48px] px-4 py-2 shadow-lg rounded-xl border border-grey-400 items-center">
       <AddNodePopOver />
+      <SearchButton />
       <FitViewTrigger />
       <Separator orientation="vertical" className="h-6" />
       <ShareButton />
@@ -37,19 +39,27 @@ const AddNodePopOver = () => {
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-80 p-4 px-4 bg-white shadow-lg rounded-lg"
+        className="bg-white shadow-lg rounded-lg"
         side="bottom"
         align="center"
         sideOffset={20}
       >
-        <div className="grid grid-cols-4 space-2">
-          <div
-            onDragStart={(event) => onDragStart(event, "default")}
-            className="cursor-grab flex items-center justify-center transition-transform transform hover:scale-105"
-            draggable
-          >
-            <Link size={24} />
-          </div>
+        <div className="grid grid-cols-4 gap-4 p-4">
+          {Object.keys(customNodes)
+            .sort((a, b) => customNodes[a].order - customNodes[b].order)
+            .map((key, index) => {
+              const node = customNodes[key];
+              return (
+                <div
+                  key={index}
+                  onDragStart={(event) => onDragStart(event, key)}
+                  className="w-12 h-12 flex justify-center items-center cursor-grab transition-transform transform hover:scale-105"
+                  draggable
+                >
+                  <TooltipIcon icon={<node.icon size={36} />} tooltip={node.name} sideOffset={2}/>
+                </div>
+              );
+            })}
         </div>
       </PopoverContent>
     </Popover>
@@ -73,31 +83,16 @@ const FitViewTrigger = () => {
 };
 
 const ShareButton = () => {
-  return <TooltipIcon icon={<Share2 size={24} />} tooltip="Share" />;
+  return <TooltipIcon icon={<Share2 size={24} />} tooltip="Share" sideOffset={14} />;
 };
 
 const ForkButton = () => {
-  return <TooltipIcon icon={<GitFork size={24} />} tooltip="Fork" />;
+  return <TooltipIcon icon={<GitFork size={24} />} tooltip="Fork" sideOffset={14} />;
 };
 
-type ToolbarButtonProps = {
-  icon: React.ReactNode;
-  tooltip: string;
-  onClick?: () => void;
+const SearchButton = () => {
+  return <TooltipIcon icon={<Search size={24} />} tooltip="Search" sideOffset={14} />;
 };
 
-const TooltipIcon = ({ icon, tooltip, onClick }: ToolbarButtonProps) => (
-  <Tooltip delayDuration={400}>
-    <TooltipTrigger asChild>
-      <div
-        className="cursor-pointer flex items-center justify-center hover:scale-110 transition-transform transform"
-        onClick={onClick}
-      >
-        {icon}
-      </div>
-    </TooltipTrigger>
-    <TooltipContent side="bottom" sideOffset={14}>
-      {tooltip}
-    </TooltipContent>
-  </Tooltip>
-);
+
+

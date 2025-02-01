@@ -12,23 +12,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TagsInput } from "@/components/ui/extension/tags-input";
-import { NodeData } from "@/store/types";
 import { WandSparkles } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-
-type DefaultNodeEditFormProps = {
-  handleUpdateNode: (data: NodeData) => void;
-  data: NodeData;
-};
+import { BlogNodeEditFormProps } from "@/store/types";
 
 const formSchema = z.object({
   title: z.string().max(48),
-  url: z.string().url({ message: "Please enter a valid URL" }),
+  url: z.string(),
   description: z.string().optional(),
   tags: z.array(z.string()).optional().default([""]),
 });
 
-export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultNodeEditFormProps) {
+export default function BlogNodeEditForm({ handleUpdateNode, data }: BlogNodeEditFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,6 +37,9 @@ export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultN
   });
 
   const onChange = (values: z.infer<typeof formSchema>) => handleUpdateNode(values);
+
+  const urlValue = form.watch("url");
+  const isUrlEmpty = !urlValue;
 
   return (
     <Form {...form}>
@@ -84,7 +82,13 @@ export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultN
             <FormItem className="space-y-1 text-left nodrag">
               <FormLabel className="text-xs">Title</FormLabel>
               <FormControl>
-                <Input className="h-6 text-xs" placeholder="<Placeholder>" type="text" {...field} />
+                <Input
+                  className="h-6 text-xs"
+                  placeholder="<Placeholder>"
+                  type="text"
+                  disabled={isUrlEmpty}
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="text-xs text-right" />
             </FormItem>
@@ -101,6 +105,7 @@ export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultN
                 <Textarea
                   placeholder="Add a description"
                   className="text-xs min-h-[60px] resize-none"
+                  disabled={isUrlEmpty}
                   {...field}
                 />
               </FormControl>
@@ -120,7 +125,8 @@ export default function DefaultNodeEditForm({ handleUpdateNode, data }: DefaultN
                   value={field.value}
                   onValueChange={field.onChange}
                   placeholder="Enter your tags"
-                  className="text-xs"
+                  className="text-xs disabled"
+                  disabled={isUrlEmpty}
                 />
               </FormControl>
               <FormMessage className="text-xs text-right" />
