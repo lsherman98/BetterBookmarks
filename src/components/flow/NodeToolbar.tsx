@@ -1,7 +1,7 @@
-import { Edge, NodeToolbar as RFNodeToolbar, Position, useReactFlow } from "@xyflow/react";
+import { NodeToolbar as RFNodeToolbar, Position, useReactFlow } from "@xyflow/react";
 import { Button } from "../ui/button";
-import { PlusIcon, Save, TextCursorInput, Trash } from "lucide-react";
-import { AppNode, AppState } from "@/store/types";
+import { Save, TextCursorInput, Trash } from "lucide-react";
+import { AppState } from "@/store/types";
 import useStore from "@/store/store";
 import { useShallow } from "zustand/react/shallow";
 import { useCallback } from "react";
@@ -23,37 +23,38 @@ const selector = (state: AppState) => ({
 });
 
 export default function NodeToolbar({ id, isEditing, setIsEditing, position }: NodeToolbarProps) {
-  const { nodes, deleteNode, addNode, addEdge } = useStore(useShallow(selector));
+  const { edges, deleteNode } = useStore(useShallow(selector));
   const { setCenter } = useReactFlow();
+
+  // Helper function to get descendant ids recursively
+  const getDescendantIds = useCallback(
+    (parentId: string): string[] => {
+      let descendants: string[] = [];
+      edges.forEach((edge) => {
+        if (edge.source === parentId) {
+          descendants.push(edge.target);
+          descendants = descendants.concat(getDescendantIds(edge.target));
+        }
+      });
+      return descendants;
+    },
+    [edges]
+  );
 
   const handleDeleteNode = useCallback(() => {
     if (!id) {
       newToast("destructive", "Something went wrong.");
       return;
     }
-    deleteNode(id);
-  }, [deleteNode, id]);
-
-  const handleAddNode = useCallback(() => {
-    if (!id) {
-      newToast("destructive", "Something went wrong.");
-      return;
+    const descendantIds = getDescendantIds(id);
+    if (descendantIds.length > 0) {
+      const confirmed = window.confirm(
+        "This node has child nodes. Do you want to delete it and all its descendants?"
+      );
+      if (!confirmed) return;
     }
-    const newNode: AppNode = {
-      id: (nodes.length + 1).toString(),
-      type: "default",
-      data: { isNew: true },
-      position: { x: 0, y: 0 },
-    };
-    const newEdge: Edge = {
-      id: `${id}-${newNode.id}`,
-      source: id,
-      target: newNode.id,
-      type: "floating",
-    };
-    addNode(newNode);
-    addEdge(newEdge);
-  }, [addEdge, addNode, id, nodes.length]);
+    deleteNode(id);
+  }, [id, getDescendantIds, deleteNode]);
 
   const handleEditNode = useCallback(() => {
     if (!id) {
@@ -69,9 +70,6 @@ export default function NodeToolbar({ id, isEditing, setIsEditing, position }: N
 
   return (
     <RFNodeToolbar position={Position.Bottom} className="space-x-2">
-      <Button variant="outline" size="icon" onClick={handleAddNode}>
-        <PlusIcon />
-      </Button>
       {isEditing ? (
         <Button size="icon" onClick={handleEditNode}>
           <Save />

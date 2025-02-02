@@ -221,6 +221,10 @@ function App() {
           panOnDrag={true}
           zoomOnScroll={true}
           maxZoom={1.3}
+          deleteKeyCode={null}
+          selectionKeyCode={null}
+          multiSelectionKeyCode={null}
+          disableKeyboardA11y={true}
         >
           {/* <DevTools /> */}
           <Panel position="top-center">

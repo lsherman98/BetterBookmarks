@@ -56,6 +56,7 @@ export const useLayoutedElements = (): any => {
       x: node.position.x,
       y: node.position.y,
     }));
+    console.log(nodes);
     const edges = getEdges().map((edge) => edge);
     let running = false;
 

@@ -64,9 +64,23 @@ const useStore = create<AppState>((set, get) => ({
         });
     },
     deleteNode: (id) => {
+        const { nodes, edges } = get();
+        const getDescendantIds = (parentId: string): string[] => {
+            let descendants: string[] = [];
+            edges.forEach(edge => {
+                if (edge.source === parentId) {
+                    descendants.push(edge.target);
+                    descendants = descendants.concat(getDescendantIds(edge.target));
+                }
+            });
+            return descendants;
+        };
+        const descendantIds = getDescendantIds(id);
+        const nodesToDelete = [id, ...descendantIds];
+        console.log(nodes.filter(node => !nodesToDelete.includes(node.id)));
         set({
-            nodes: get().nodes.filter((node) => node.id !== id),
-            edges: get().edges.filter((edge) => edge.source !== id && edge.target !== id),
+            nodes: nodes.filter(node => !nodesToDelete.includes(node.id)),
+            edges: edges.filter(edge => !nodesToDelete.includes(edge.source) && !nodesToDelete.includes(edge.target)),
         });
     },
     selectNode: (id) => {
