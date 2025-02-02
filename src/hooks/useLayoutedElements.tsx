@@ -39,14 +39,12 @@ export const useLayoutedElements = (): any => {
         setNodes((nodes) =>
           nodes.map((n) => (n.id === node.id ? { ...n, zIndex: 1 } : { ...n, zIndex: 0 }))
         );
-        toggle("off");
       },
       drag: (_event, node) => {
         draggingNodeRef.current = node;
       },
       stop: () => {
         draggingNodeRef.current = null;
-        toggle("on");
       },
     }),
     [setNodes]

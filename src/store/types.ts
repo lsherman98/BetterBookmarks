@@ -5,7 +5,7 @@ import {
     type OnEdgesChange,
 } from '@xyflow/react';
 
-export type AppNode = Node
+export type AppNode = Node 
 
 export type BasicNodeData = {
     isNew?: boolean;
