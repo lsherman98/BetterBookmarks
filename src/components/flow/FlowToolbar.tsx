@@ -82,7 +82,7 @@ const FitViewTrigger = () => {
             padding: 0.2,
             duration: 500,
           });
-        }, 300);
+        }, 500);
       }}
     />
   );

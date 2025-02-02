@@ -39,7 +39,10 @@ export function CustomNodeWrapper({
   const component = customNodes[type];
 
   const handleOpenURL = () => {
-    window.open(data.url, "_blank");
+    if (type === "category" || type === "file") return;
+    if ('url' in data) {
+      window.open(data.url, "_blank");
+    }
   };
 
   const handleUpdateNode = (data: NodeData) => {
@@ -76,7 +79,7 @@ export function CustomNodeWrapper({
         <NodeHeaderTitle>{component.name}</NodeHeaderTitle>
         <NodeHeaderActions>
           <NodeHeaderAction onClick={handleOpenURL} variant="ghost" label="Delete node">
-            <ExternalLink />
+            {type !== "category" && type !== "file" && <ExternalLink />}
           </NodeHeaderAction>
         </NodeHeaderActions>
       </NodeHeader>

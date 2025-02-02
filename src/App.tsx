@@ -16,7 +16,6 @@ import { useShallow } from "zustand/react/shallow";
 import { AppState } from "@/store/types";
 import useStore from "@/store/store";
 import { useLayoutedElements } from "@/hooks/useLayoutedElements.js";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useCallback, useEffect, useRef } from "react";
 import { FlowToolbar } from "@/components/flow/FlowToolbar.js";
 import { useDnD } from "@/hooks/useDnD.jsx";
@@ -70,7 +69,7 @@ function App() {
           padding: 0.2,
           duration: 500,
         });
-      }, 2000);
+      }, 100);
     }
   }, [toggle, initialized, viewportInitialized, fitView]);
 
@@ -224,9 +223,6 @@ function App() {
           maxZoom={1.3}
         >
           {/* <DevTools /> */}
-          <Panel position="top-left">
-            <SidebarTrigger className="-ml-1" />
-          </Panel>
           <Panel position="top-center">
             <FlowToolbar />
           </Panel>

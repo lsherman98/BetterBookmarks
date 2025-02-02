@@ -34,7 +34,7 @@ export type ArticleNodeData = BasicNodeData
 export type BlogNodeData = BasicNodeData
 export type PodcastNodeData = BasicNodeData
 export type YoutubeNodeData = BasicNodeData
-type NodeData = BasicNodeData | BookNodeData | CategoryNodeData | FileNodeData | ArticleNodeData | BlogNodeData | PodcastNodeData | YoutubeNodeData
+export type NodeData = BasicNodeData | BookNodeData | CategoryNodeData | FileNodeData | ArticleNodeData | BlogNodeData | PodcastNodeData | YoutubeNodeData
 
 export type YoutubeNodeEditFormProps = {
     handleUpdateNode: (data: YoutubeNodeData) => void;
@@ -69,9 +69,24 @@ export type FileNodeEditFormProps = {
     data: FileNodeData;
 };
 
+export type Flow = {
+    id: string;
+    data: FlowData;
+}
+
+export type FlowData = {
+    title: string;
+    description: string;
+}
+
 export type AppState = {
     nodes: AppNode[];
     edges: Edge[];
+    flows: Flow[];
+    selectedFlow: Flow;
+    setSelectedFlow: (flowId: string) => void;
+    addFlow: (flowData: FlowData) => void;
+    updateFlow: (flowId: string, data: FlowData) => void;
     onNodesChange: OnNodesChange<AppNode>;
     onEdgesChange: OnEdgesChange;
     getNodes: () => AppNode[];

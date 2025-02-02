@@ -4,6 +4,7 @@ import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
 import { initialNodes } from './nodes';
 import { initialEdges } from './edges';
 import { type AppState } from './types';
+import { flows } from './flows';
 
 // this is our useStore hook that we can use in our components to get parts of the store and call actions
 const useStore = create<AppState>((set, get) => ({
@@ -11,6 +12,23 @@ const useStore = create<AppState>((set, get) => ({
     edges: initialEdges,
     targetNode: null,
     isRunning: false,
+    flows: flows,
+    selectedFlow: flows[0],
+    addFlow: (flowData) => {
+        set({
+            flows: [...get().flows, { id: String(get().flows.length + 1), data: flowData }],
+        });
+    },
+    updateFlow: (flowId, data) => {
+        set({
+            flows: get().flows.map((flow) => (flow.id === flowId ? { ...flow, data } : flow)),
+        });
+    },
+    setSelectedFlow: (flowId) => {
+        set({
+            selectedFlow: get().flows.find((flow) => flow.id === flowId),
+        });
+    },
     onNodesChange: (changes) => {
         set({
             nodes: applyNodeChanges(changes, get().nodes),
@@ -54,8 +72,8 @@ const useStore = create<AppState>((set, get) => ({
     selectNode: (id) => {
         set({
             nodes: get().nodes.map((node) => ({
-            ...node,
-            selected: node.id === id ? true : false,
+                ...node,
+                selected: node.id === id ? true : false,
             })),
         });
     },
