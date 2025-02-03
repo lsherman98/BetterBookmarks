@@ -218,11 +218,12 @@ function App() {
           onDrop={onDrop}
           panOnDrag={true}
           zoomOnScroll={true}
-          maxZoom={1.3}
           deleteKeyCode={null}
           selectionKeyCode={null}
           multiSelectionKeyCode={null}
           disableKeyboardA11y={true}
+          minZoom={0.1}
+          className="!bg-teal-50"
         >
           {/* <DevTools /> */}
           <Panel position="top-center">

@@ -1,11 +1,9 @@
 import { create } from 'zustand';
 import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
-
 import { initialNodes } from './nodes';
 import { initialEdges } from './edges';
 import { type AppState } from './types';
 import { flows } from './flows';
-import { layoutGraph } from '@/lib/layoutGraph';
 
 // this is our useStore hook that we can use in our components to get parts of the store and call actions
 const useStore = create<AppState>((set, get) => ({

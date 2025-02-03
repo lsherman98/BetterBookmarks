@@ -107,18 +107,23 @@ export function FlowSwitcher() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-xs text-muted-foreground">Flows</DropdownMenuLabel>
-              {flows.map((flow, index) => (
+                {flows.map((flow, index) => (
                 <DropdownMenuItem
                   key={index}
                   onClick={() => setSelectedFlow(flow.id)}
-                  className="gap-2 p-2 cursor-pointer"
+                  className={`gap-2 p-2 cursor-pointer ${flow.id === selectedFlow.id ? 'bg-selected-flow' : ''}`}
                 >
                   <div className="flex size-6 items-center justify-center rounded-sm border">
-                    <ChartNetwork className="size-4 grow-0" />
+                  <ChartNetwork className="size-4 grow-0" />
                   </div>
-                  {flow.data.title}
+                  <div className="flex-1">{flow.data.title}</div>
+                  {flow.id === selectedFlow.id && (
+                  <div className="flex items-center justify-center">
+                    <Check className="size-4 text-selected-flow-icon" />
+                  </div>
+                  )}
                 </DropdownMenuItem>
-              ))}
+                ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="gap-2 p-2 cursor-pointer"

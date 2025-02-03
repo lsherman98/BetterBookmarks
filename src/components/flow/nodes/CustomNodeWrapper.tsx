@@ -13,7 +13,6 @@ import { useShallow } from "zustand/react/shallow";
 import Toolbar from "../NodeToolbar";
 import { useEffect, useState } from "react";
 import useStore from "@/store/store";
-import { Placeholder } from "../Placeholder";
 import { newToast } from "@/lib/utils";
 import { customNodes } from "@/lib/data";
 
@@ -40,7 +39,7 @@ export function CustomNodeWrapper({
 
   const handleOpenURL = () => {
     if (type === "category" || type === "file") return;
-    if ('url' in data) {
+    if ("url" in data) {
       window.open(data.url, "_blank");
     }
   };
@@ -67,14 +66,14 @@ export function CustomNodeWrapper({
     handleUpdateNode({ ...data, isNew: false });
   }, []);
 
-  return (
+  return showContent ? (
     <BaseNode
       selected={selected}
-      className={`min-w-[12rem] max-w-[16rem] ${
+      className={`min-w-[12rem] max-w-[16rem] ${type === "category" ? "rounded-full" : ""} ${
         id === targetNode ? "border-2 border-dashed border-blue-500" : ""
       }`}
     >
-      <NodeHeader className="-mx-3 border-b">
+      <NodeHeader className={`border-b bg-${type}`}>
         <NodeHeaderIcon>{<component.icon />}</NodeHeaderIcon>
         <NodeHeaderTitle>{component.name}</NodeHeaderTitle>
         <NodeHeaderActions>
@@ -86,11 +85,25 @@ export function CustomNodeWrapper({
       <Toolbar id={id} isEditing={isEditing} setIsEditing={setIsEditing} position={position} />
       {isEditing ? (
         <component.edit data={data} handleUpdateNode={handleUpdateNode} />
-      ) : showContent ? (
-        <component.data data={data} />
       ) : (
-        <Placeholder nodeType={type} />
+        <component.data data={data} />
       )}
+      <Handle type="source" position={Position.Right} />
+      <Handle type="target" position={Position.Left} />
+    </BaseNode>
+  ) : (
+    <BaseNode
+      selected={selected}
+      className={`min-w-[8rem] shadow-md rounded-md border-2 border-stone-400 bg-${type} ${
+        type === "category" && !showContent
+          ? "rounded-full w-[12rem] h-[12rem] flex justify-center items-center"
+          : ""
+      } ${id === targetNode ? "border-4 border-dashed border-blue-300" : ""}`}
+    >
+      <div className="flex items-center justify-center p-2 gap-2 text-lg">
+        <component.icon />
+        {component.name}
+      </div>
       <Handle type="source" position={Position.Right} />
       <Handle type="target" position={Position.Left} />
     </BaseNode>

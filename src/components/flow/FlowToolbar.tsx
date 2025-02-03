@@ -26,7 +26,7 @@ import useStore from "@/store/store";
 
 export function FlowToolbar() {
   return (
-    <div className="mt-2 flex gap-2 bg-white h-[48px] px-4 py-2 shadow-lg rounded-xl border border-grey-400 items-center">
+    <div className="mt-2 flex gap-2 bg-white px-4 py-2 shadow-lg rounded-xl border border-grey-400 items-center">
       <AddNodePopOver />
       <Filters />
       <FitViewTrigger />
@@ -49,7 +49,11 @@ const AddNodePopOver = () => {
         <div
           className={`cursor-pointer flex items-center justify-center hover:scale-110 transition-transform transform`}
         >
-          {isOpen ? <X size={28} /> : <TooltipIcon icon={<Plus size={28} />} tooltip="Add Node" />}
+          {isOpen ? (
+            <X size={24} />
+          ) : (
+            <TooltipIcon icon={<Plus size={24} />} tooltip="Bookmarks" sideOffset={12} />
+          )}
         </div>
       </PopoverTrigger>
       <PopoverContent
@@ -86,7 +90,8 @@ const FitViewTrigger = () => {
   return (
     <TooltipIcon
       icon={<CrosshairIcon size={24} />}
-      tooltip="Fit View"
+      tooltip="Fit Content"
+      sideOffset={14}
       onClick={() => {
         layoutNodes();
         setTimeout(() => {
@@ -182,9 +187,9 @@ const Filters = () => {
           className={`cursor-pointer flex items-center justify-center hover:scale-110 transition-transform transform`}
         >
           {isOpen ? (
-            <X size={28} />
+            <X size={24} />
           ) : (
-            <TooltipIcon icon={<Filter size={24} />} tooltip="Filter" sideOffset={14} />
+            <TooltipIcon icon={<Filter size={24} />} tooltip="Filters" sideOffset={14} />
           )}
         </div>
       </PopoverTrigger>
@@ -225,16 +230,15 @@ const Filters = () => {
                 control={form.control}
                 name="tags"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="space-y-1">
                     <FormLabel>Tags</FormLabel>
                     <FormControl>
                       <MultiSelector
                         values={field.value ?? []}
                         onValuesChange={field.onChange}
                         loop
-                        className=""
                       >
-                        <MultiSelectorTrigger>
+                        <MultiSelectorTrigger className="border border-gray-200 rounded-md">
                           <MultiSelectorInput />
                         </MultiSelectorTrigger>
                         <MultiSelectorContent>
