@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { FlowData } from "@/store/types";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { useForm } from "react-hook-form";
@@ -93,7 +94,7 @@ export function FlowDialog({
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="" type="text" {...field} />
+                      <Textarea placeholder="Enter a description" {...field} />
                     </FormControl>
                   </FormItem>
                 )}

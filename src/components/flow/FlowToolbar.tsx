@@ -226,7 +226,7 @@ const Filters = () => {
                 control={form.control}
                 name="tags"
                 render={({ field }) => (
-                  <FormItem className="space-y-1">
+                  <FormItem className="space-y-0 pb-4">
                     <FormLabel>Tags</FormLabel>
                     <FormControl>
                       <MultiSelector

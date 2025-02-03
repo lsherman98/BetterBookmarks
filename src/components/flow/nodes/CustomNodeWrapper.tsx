@@ -69,7 +69,7 @@ export function CustomNodeWrapper({
   return showContent ? (
     <BaseNode
       selected={selected}
-      className={`min-w-[12rem] max-w-[16rem] ${type === "category" ? "rounded-full" : ""} ${
+      className={`min-w-[12rem] max-w-[16rem] ${type === "category" && !showContent ? "rounded-full" : ""} ${
         id === targetNode ? "border-2 border-dashed border-blue-500" : ""
       }`}
     >
