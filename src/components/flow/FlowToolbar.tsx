@@ -1,12 +1,11 @@
 import { useDnD } from "@/hooks/useDnD";
-import { CrosshairIcon, Filter, GitFork, Plus, Share2, X } from "lucide-react";
+import { CrosshairIcon, Filter, Plus, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { useReactFlow } from "@xyflow/react";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
 import { customNodes } from "@/lib/data";
 import { TooltipIcon } from "./TooltipIcon";
-import { useLayoutedElements } from "@/hooks/useLayoutedElements";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,9 +30,6 @@ export function FlowToolbar() {
       <AddNodePopOver />
       <Filters />
       <FitViewTrigger />
-      <Separator orientation="vertical" className="h-6" />
-      <ShareButton />
-      <ForkButton />
     </div>
   );
 }
@@ -86,15 +82,14 @@ const AddNodePopOver = () => {
 
 const FitViewTrigger = () => {
   const { fitView } = useReactFlow();
-  const [, { toggle }] = useLayoutedElements();
+  const layoutNodes = useStore((state:AppState) => state.layoutNodes);
   return (
     <TooltipIcon
       icon={<CrosshairIcon size={24} />}
       tooltip="Fit View"
       onClick={() => {
-        toggle("on");
+        layoutNodes();
         setTimeout(() => {
-          toggle("off");
           fitView({
             padding: 0.2,
             duration: 500,
@@ -103,14 +98,6 @@ const FitViewTrigger = () => {
       }}
     />
   );
-};
-
-const ShareButton = () => {
-  return <TooltipIcon icon={<Share2 size={24} />} tooltip="Share" sideOffset={14} />;
-};
-
-const ForkButton = () => {
-  return <TooltipIcon icon={<GitFork size={24} />} tooltip="Fork" sideOffset={14} />;
 };
 
 const filtersFormSchema = z.object({
@@ -168,7 +155,7 @@ const Filters = () => {
   function handleClearFilters() {
     setNodes(nodes.map((node) => ({ ...node, hidden: false })));
     form.reset({
-      type: "", // updated: changed from undefined to ""
+      type: "",
       tags: [],
     });
   }

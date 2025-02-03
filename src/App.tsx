@@ -54,24 +54,22 @@ function App() {
     clearSelectedNodes,
     setTargetNode,
   } = useStore(useShallow(selector));
-  const [initialized, { toggle }, dragEvents] = useLayoutedElements();
-  const { getIntersectingNodes, screenToFlowPosition, fitView, viewportInitialized} =
+  const dragEvents = useLayoutedElements();
+  const { getIntersectingNodes, screenToFlowPosition, fitView, viewportInitialized } =
     useReactFlow();
   const reactFlowWrapper = useRef(null);
   const [type] = useDnD();
 
   useEffect(() => {
-    if (initialized && viewportInitialized) {
-      toggle("on");
+    if (viewportInitialized) {
       setTimeout(() => {
-        toggle("off");
         fitView({
           padding: 0.2,
           duration: 500,
         });
       }, 100);
     }
-  }, [toggle, initialized, viewportInitialized, fitView]);
+  }, [viewportInitialized, fitView]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges(addEdge(params, edges)),

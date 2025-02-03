@@ -12,8 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TagsInput } from "@/components/ui/extension/tags-input";
-import { WandSparkles } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { BasicNodeEditFormProps } from "@/store/types";
 
 const formSchema = z.object({
@@ -58,16 +56,6 @@ export default function BasicNodeEditForm({ handleUpdateNode, data }: BasicNodeE
                     type="text"
                     {...field}
                   />
-                  {field.value && (
-                    <Tooltip delayDuration={400}>
-                      <TooltipTrigger asChild>
-                        <WandSparkles size={16} className="text-blue-500 ml-2" />
-                      </TooltipTrigger>
-                      <TooltipContent className="text-xs" side="right" sideOffset={8}>
-                        Auto Populate
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
                 </div>
               </FormControl>
               <FormMessage className="text-xs text-right" />

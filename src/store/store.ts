@@ -5,6 +5,7 @@ import { initialNodes } from './nodes';
 import { initialEdges } from './edges';
 import { type AppState } from './types';
 import { flows } from './flows';
+import { layoutGraph } from '@/lib/layoutGraph';
 
 // this is our useStore hook that we can use in our components to get parts of the store and call actions
 const useStore = create<AppState>((set, get) => ({
@@ -52,6 +53,7 @@ const useStore = create<AppState>((set, get) => ({
         set({
             nodes: [...get().nodes, node],
         });
+        get().layoutNodes();
     },
     addEdge: (edge) => {
         set({
@@ -62,6 +64,7 @@ const useStore = create<AppState>((set, get) => ({
         set({
             nodes: get().nodes.map((node) => (node.id === id ? { ...node, data } : node)),
         });
+        get().layoutNodes();
     },
     deleteNode: (id) => {
         const { nodes, edges } = get();
@@ -82,6 +85,7 @@ const useStore = create<AppState>((set, get) => ({
             nodes: nodes.filter(node => !nodesToDelete.includes(node.id)),
             edges: edges.filter(edge => !nodesToDelete.includes(edge.source) && !nodesToDelete.includes(edge.target)),
         });
+        get().layoutNodes();
     },
     selectNode: (id) => {
         set({
@@ -105,6 +109,13 @@ const useStore = create<AppState>((set, get) => ({
     },
     setIsRunning: (isRunning) => {
         set({ isRunning });
+    },
+    layoutNodes: () => {
+        const { nodes, edges } = layoutGraph(get().nodes, get().edges);
+        set({
+            nodes,
+            edges,
+        });
     },
 }));
 

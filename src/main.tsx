@@ -11,17 +11,17 @@ import { TooltipProvider } from "./components/ui/tooltip.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ToastProvider>
-      <TooltipProvider>
-        <Layout>
-          <ReactFlowProvider>
-            <DnDProvider>
-              <App />
-            </DnDProvider>
-          </ReactFlowProvider>
-        </Layout>
-        <Toaster />
-      </TooltipProvider>
-    </ToastProvider>
+      <ToastProvider>
+        <TooltipProvider>
+          <Layout>
+            <ReactFlowProvider>
+              <DnDProvider>
+                <App />
+              </DnDProvider>
+            </ReactFlowProvider>
+          </Layout>
+          <Toaster />
+        </TooltipProvider>
+      </ToastProvider>
   </StrictMode>
 );

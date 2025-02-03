@@ -105,4 +105,5 @@ export type AppState = {
     setTargetNode: (targetNode: string | null) => void;
     isRunning: boolean;
     setIsRunning: (isRunning: boolean) => void;
+    layoutNodes: () => void;
 };
