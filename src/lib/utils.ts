@@ -1,4 +1,4 @@
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/useToast";
 import { Position } from "@xyflow/react";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"

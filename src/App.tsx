@@ -66,8 +66,9 @@ function App() {
         fitView({
           padding: 0.2,
           duration: 500,
+          maxZoom: 1,
         });
-      }, 100);
+      }, 500);
     }
   }, [viewportInitialized, fitView]);
 
@@ -225,7 +226,6 @@ function App() {
           minZoom={0.1}
           className="!bg-teal-50"
         >
-          {/* <DevTools /> */}
           <Panel position="top-center">
             <FlowToolbar />
           </Panel>

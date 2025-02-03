@@ -44,8 +44,8 @@ export function RootNode({ selected }: NodeProps) {
       }`}
     >
       <div className="flex items-center justify-center p-2 gap-2 text-lg">
-          <Target />
-          START
+        <Target />
+        START
       </div>
       <Handle type="source" position={Position.Left} />
     </BaseNode>

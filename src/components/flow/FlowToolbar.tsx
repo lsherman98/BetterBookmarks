@@ -86,7 +86,7 @@ const AddNodePopOver = () => {
 
 const FitViewTrigger = () => {
   const { fitView } = useReactFlow();
-  const layoutNodes = useStore((state:AppState) => state.layoutNodes);
+  const layoutNodes = useStore((state: AppState) => state.layoutNodes);
   return (
     <TooltipIcon
       icon={<CrosshairIcon size={24} />}
@@ -98,6 +98,7 @@ const FitViewTrigger = () => {
           fitView({
             padding: 0.2,
             duration: 500,
+            maxZoom: 1,
           });
         }, 500);
       }}
@@ -130,13 +131,9 @@ const Filters = () => {
   });
 
   function onSubmit(values: z.infer<typeof filtersFormSchema>) {
-    // Filter nodes with updated criteria:
     const filteredNodes = nodes.filter((node) => {
-      // Always show category nodes.
       if (node.type === "category" || node.type === "root") return true;
-      // Apply type filter.
       if (values.type && node.type !== values.type) return false;
-      // Apply tags filter.
       if (values.tags && values.tags.length > 0) {
         const nodeTags = (node.data.tags as string[]) ?? [];
         if (!values.tags.every((tag) => nodeTags.includes(tag))) return false;
@@ -144,7 +141,6 @@ const Filters = () => {
       return true;
     });
 
-    // Ensure that any node with a parent shows its parent as well.
     filteredNodes.forEach((node) => {
       if (node.data.parent) {
         const parentNode = nodes.find((n) => n.id === node.data.parent);

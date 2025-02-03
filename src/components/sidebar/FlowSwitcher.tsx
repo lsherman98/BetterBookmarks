@@ -1,4 +1,4 @@
-import { ChartNetwork, ChevronsUpDown, Pencil, Plus } from "lucide-react";
+import { ChartNetwork, Check, ChevronsUpDown, Pencil, Plus } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -31,9 +31,11 @@ const selector = (state: AppState) => ({
 
 export function FlowSwitcher() {
   const { isMobile } = useSidebar();
-  const { flows, selectedFlow, setSelectedFlow, updateFlow, addFlow } = useStore(useShallow(selector));
+  const { flows, selectedFlow, setSelectedFlow, updateFlow, addFlow } = useStore(
+    useShallow(selector)
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogType, setDialogType] = useState<'new' | 'edit'>('new');
+  const [dialogType, setDialogType] = useState<"new" | "edit">("new");
 
   const handleAddFlow = (data: FlowData) => {
     addFlow(data);
@@ -46,21 +48,21 @@ export function FlowSwitcher() {
   };
 
   const handleNewFlow = () => {
-    setDialogType('new');
+    setDialogType("new");
     setDialogOpen(true);
   };
 
   const handleEditFlow = () => {
-    setDialogType('edit');
+    setDialogType("edit");
     setDialogOpen(true);
   };
 
   return (
     <>
-      <FlowDialog 
+      <FlowDialog
         type={dialogType}
-        handler={dialogType === 'new' ? handleAddFlow : handleUpdateFlow}
-        data={dialogType === 'edit' ? selectedFlow.data : undefined}
+        handler={dialogType === "new" ? handleAddFlow : handleUpdateFlow}
+        data={dialogType === "edit" ? selectedFlow.data : undefined}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
@@ -107,23 +109,25 @@ export function FlowSwitcher() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-xs text-muted-foreground">Flows</DropdownMenuLabel>
-                {flows.map((flow, index) => (
+              {flows.map((flow, index) => (
                 <DropdownMenuItem
                   key={index}
                   onClick={() => setSelectedFlow(flow.id)}
-                  className={`gap-2 p-2 cursor-pointer ${flow.id === selectedFlow.id ? 'bg-selected-flow' : ''}`}
+                  className={`gap-2 p-2 cursor-pointer ${
+                    flow.id === selectedFlow.id ? "bg-selected-flow" : ""
+                  }`}
                 >
                   <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <ChartNetwork className="size-4 grow-0" />
+                    <ChartNetwork className="size-4 grow-0" />
                   </div>
                   <div className="flex-1">{flow.data.title}</div>
                   {flow.id === selectedFlow.id && (
-                  <div className="flex items-center justify-center">
-                    <Check className="size-4 text-selected-flow-icon" />
-                  </div>
+                    <div className="flex items-center justify-center">
+                      <Check className="size-4 text-selected-flow-icon" />
+                    </div>
                   )}
                 </DropdownMenuItem>
-                ))}
+              ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="gap-2 p-2 cursor-pointer"

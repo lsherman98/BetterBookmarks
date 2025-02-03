@@ -10,5 +10,3 @@ export const DnDProvider = ({ children }) => {
 
   return <DnDContext.Provider value={[type, setType]}>{children}</DnDContext.Provider>;
 };
-
-

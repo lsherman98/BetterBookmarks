@@ -125,9 +125,6 @@ importers:
       embla-carousel-react:
         specifier: ^8.5.2
         version: 8.5.2(react@18.3.1)
-      google-api-javascript-client:
-        specifier: ^0.1.0
-        version: 0.1.0
       input-otp:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -189,12 +186,6 @@ importers:
       '@types/d3-quadtree':
         specifier: ^3.0.6
         version: 3.0.6
-      '@types/gapi':
-        specifier: ^0.0.47
-        version: 0.0.47
-      '@types/lodash':
-        specifier: ^4.17.14
-        version: 4.17.14
       '@types/node':
         specifier: ^22.10.10
         version: 22.10.10
@@ -1528,17 +1519,8 @@ packages:
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
-  '@types/gapi@0.0.45':
-    resolution: {integrity: sha512-xc8X9FrdZcWoOd4tMhLenYbnmaxCgy2FBt+SOI7xv9Efy/7Jk2V9gBZiufFBLIfDUUvpWY7DN3x4lrdL1I9y0Q==}
-
-  '@types/gapi@0.0.47':
-    resolution: {integrity: sha512-/ZsLuq6BffMgbKMtZyDZ8vwQvTyKhKQ1G2K6VyWCgtHHhfSSXbk4+4JwImZiTjWNXfI2q1ZStAwFFHSkNoTkHA==}
-
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
-
-  '@types/lodash@4.17.14':
-    resolution: {integrity: sha512-jsxagdikDiDBeIRaPYtArcT8my4tN1og7MtMRquFT3XNA6axxyHDRUemqDz/taRDdOUn0GnGHRCuff4q48sW9A==}
 
   '@types/node@22.10.10':
     resolution: {integrity: sha512-X47y/mPNzxviAGY5TcYPtYL8JsY3kAq2n8fMmKoRCxq/c4v4pyGNCzM2R6+M5/umG4ZfHuT+sgqDYqWc9rJ6ww==}
@@ -2101,9 +2083,6 @@ packages:
   globals@15.14.0:
     resolution: {integrity: sha512-OkToC372DtlQeje9/zHIo5CT8lRP/FUgEOKBEhU4e0abL7J7CD24fD9ohiLN5hagG/kWCYj4K5oaxxtj2Z0Dig==}
     engines: {node: '>=18'}
-
-  google-api-javascript-client@0.1.0:
-    resolution: {integrity: sha512-GqBRvjj4+gIpHZHC8uBQvTfyoY46hqHfxgzcoBOKzZuko8S+oi2xRvUKjt2SiDAd1Udqo5PyjZfGxqI3ZqmLHQ==}
 
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
@@ -4236,13 +4215,7 @@ snapshots:
 
   '@types/estree@1.0.6': {}
 
-  '@types/gapi@0.0.45': {}
-
-  '@types/gapi@0.0.47': {}
-
   '@types/json-schema@7.0.15': {}
-
-  '@types/lodash@4.17.14': {}
 
   '@types/node@22.10.10':
     dependencies:
@@ -4866,10 +4839,6 @@ snapshots:
   globals@14.0.0: {}
 
   globals@15.14.0: {}
-
-  google-api-javascript-client@0.1.0:
-    dependencies:
-      '@types/gapi': 0.0.45
 
   graphemer@1.4.0: {}
 

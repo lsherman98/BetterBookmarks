@@ -2,21 +2,7 @@ import { FileNodeData } from "@/store/types";
 import { Badge } from "@/components/ui/badge";
 
 export default function FileNodeDataDisplay({ data }: { data: FileNodeData }) {
-  const handleDownload = () => {
-    // Implement the logic to fetch and download the file using data.fileID
-    fetch(`https://api.example.com/files/${data.fileId}`)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = data.title || "downloaded-file";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      })
-      .catch((error) => console.error("Error downloading file:", error));
-  };
+  const handleDownload = () => {};
 
   return (
     <div className="p-4 bg-white max-w-md mx-auto flex flex-col justify-between h-full">

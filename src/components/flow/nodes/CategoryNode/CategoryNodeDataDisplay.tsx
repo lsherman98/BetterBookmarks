@@ -18,5 +18,3 @@ export default function CategoryNodeDataDisplay({ data }: { data: CategoryNodeDa
     </div>
   );
 }
-
-

@@ -20,7 +20,10 @@ const formSchema = z.object({
   tags: z.array(z.string()).optional().default([""]),
 });
 
-export default function CategoryNodeEditForm({ handleUpdateNode, data }: CategoryNodeEditFormProps) {
+export default function CategoryNodeEditForm({
+  handleUpdateNode,
+  data,
+}: CategoryNodeEditFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

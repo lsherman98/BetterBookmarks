@@ -1,12 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import {
-  Command,
-  CommandItem,
-  CommandEmpty,
-  CommandList,
-} from "@/components/ui/command";
+import { Command, CommandItem, CommandEmpty, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
 import { X as RemoveIcon, Check } from "lucide-react";
@@ -19,8 +14,7 @@ import React, {
   useState,
 } from "react";
 
-interface MultiSelectorProps
-  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive> {
+interface MultiSelectorProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive> {
   values: string[];
   onValuesChange: (value: string[]) => void;
   loop?: boolean;
@@ -80,7 +74,7 @@ const MultiSelector = ({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [value],
+    [value]
   );
 
   const handleSelect = React.useCallback(
@@ -89,13 +83,13 @@ const MultiSelector = ({
       const target = e.currentTarget;
       const selection = target.value.substring(
         target.selectionStart ?? 0,
-        target.selectionEnd ?? 0,
+        target.selectionEnd ?? 0
       );
 
       setSelectedValue(selection);
       setIsValueSelected(selection === inputValue);
     },
-    [inputValue],
+    [inputValue]
   );
 
   const handleKeyDown = useCallback(
@@ -107,9 +101,7 @@ const MultiSelector = ({
 
       const moveNext = () => {
         const nextIndex = activeIndex + 1;
-        setActiveIndex(
-          nextIndex > value.length - 1 ? (loop ? 0 : -1) : nextIndex,
-        );
+        setActiveIndex(nextIndex > value.length - 1 ? (loop ? 0 : -1) : nextIndex);
       };
 
       const movePrev = () => {
@@ -118,12 +110,7 @@ const MultiSelector = ({
       };
 
       const moveCurrent = () => {
-        const newIndex =
-          activeIndex - 1 <= 0
-            ? value.length - 1 === 0
-              ? -1
-              : 0
-            : activeIndex - 1;
+        const newIndex = activeIndex - 1 <= 0 ? (value.length - 1 === 0 ? -1 : 0) : activeIndex - 1;
         setActiveIndex(newIndex);
       };
 
@@ -182,7 +169,7 @@ const MultiSelector = ({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [value, inputValue, activeIndex, loop],
+    [value, inputValue, activeIndex, loop]
   );
 
   return (
@@ -202,10 +189,7 @@ const MultiSelector = ({
     >
       <Command
         onKeyDown={handleKeyDown}
-        className={cn(
-          "overflow-visible bg-transparent flex flex-col space-y-2",
-          className,
-        )}
+        className={cn("overflow-visible bg-transparent flex flex-col space-y-2", className)}
         dir={dir}
         {...props}
       >
@@ -215,55 +199,54 @@ const MultiSelector = ({
   );
 };
 
-const MultiSelectorTrigger = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, children, ...props }, ref) => {
-  const { value, onValueChange, activeIndex } = useMultiSelect();
+const MultiSelectorTrigger = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, children, ...props }, ref) => {
+    const { value, onValueChange, activeIndex } = useMultiSelect();
 
-  const mousePreventDefault = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
+    const mousePreventDefault = useCallback((e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    }, []);
 
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        "flex flex-wrap gap-1 p-1 py-2 ring-1 ring-muted rounded-lg bg-background",
-        {
-          "ring-1 focus-within:ring-ring": activeIndex === -1,
-        },
-        className,
-      )}
-      {...props}
-    >
-      {value.map((item, index) => (
-        <Badge
-          key={item}
-          className={cn(
-            "px-1 rounded-xl flex items-center gap-1",
-            activeIndex === index && "ring-2 ring-muted-foreground ",
-          )}
-          variant={"secondary"}
-        >
-          <span className="text-xs">{item}</span>
-          <button
-            aria-label={`Remove ${item} option`}
-            aria-roledescription="button to remove option"
-            type="button"
-            onMouseDown={mousePreventDefault}
-            onClick={() => onValueChange(item)}
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex flex-wrap gap-1 p-1 py-2 ring-1 ring-muted rounded-lg bg-background",
+          {
+            "ring-1 focus-within:ring-ring": activeIndex === -1,
+          },
+          className
+        )}
+        {...props}
+      >
+        {value.map((item, index) => (
+          <Badge
+            key={item}
+            className={cn(
+              "px-1 rounded-xl flex items-center gap-1",
+              activeIndex === index && "ring-2 ring-muted-foreground "
+            )}
+            variant={"secondary"}
           >
-            <span className="sr-only">Remove {item} option</span>
-            <RemoveIcon className="h-4 w-4 hover:stroke-destructive" />
-          </button>
-        </Badge>
-      ))}
-      {children}
-    </div>
-  );
-});
+            <span className="text-xs">{item}</span>
+            <button
+              aria-label={`Remove ${item} option`}
+              aria-roledescription="button to remove option"
+              type="button"
+              onMouseDown={mousePreventDefault}
+              onClick={() => onValueChange(item)}
+            >
+              <span className="sr-only">Remove {item} option</span>
+              <RemoveIcon className="h-4 w-4 hover:stroke-destructive" />
+            </button>
+          </Badge>
+        ))}
+        {children}
+      </div>
+    );
+  }
+);
 
 MultiSelectorTrigger.displayName = "MultiSelectorTrigger";
 
@@ -295,7 +278,7 @@ const MultiSelectorInput = forwardRef<
       className={cn(
         "ml-2 bg-transparent outline-none placeholder:text-muted-foreground flex-1",
         className,
-        activeIndex !== -1 && "caret-transparent",
+        activeIndex !== -1 && "caret-transparent"
       )}
     />
   );
@@ -303,17 +286,16 @@ const MultiSelectorInput = forwardRef<
 
 MultiSelectorInput.displayName = "MultiSelectorInput";
 
-const MultiSelectorContent = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ children }, ref) => {
-  const { open } = useMultiSelect();
-  return (
-    <div ref={ref} className="relative">
-      {open && children}
-    </div>
-  );
-});
+const MultiSelectorContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ children }, ref) => {
+    const { open } = useMultiSelect();
+    return (
+      <div ref={ref} className="relative">
+        {open && children}
+      </div>
+    );
+  }
+);
 
 MultiSelectorContent.displayName = "MultiSelectorContent";
 
@@ -326,7 +308,7 @@ const MultiSelectorList = forwardRef<
       ref={ref}
       className={cn(
         "p-2 flex flex-col gap-2 rounded-md scrollbar-thin scrollbar-track-transparent transition-colors scrollbar-thumb-muted-foreground dark:scrollbar-thumb-muted scrollbar-thumb-rounded-lg w-full absolute bg-background shadow-md z-10 border border-muted top-0",
-        className,
+        className
       )}
     >
       {children}
@@ -341,9 +323,7 @@ MultiSelectorList.displayName = "MultiSelectorList";
 
 const MultiSelectorItem = forwardRef<
   React.ElementRef<typeof CommandPrimitive.Item>,
-  { value: string } & React.ComponentPropsWithoutRef<
-    typeof CommandPrimitive.Item
-  >
+  { value: string } & React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
 >(({ className, value, children, ...props }, ref) => {
   const { value: Options, onValueChange, setInputValue } = useMultiSelect();
 
@@ -365,7 +345,7 @@ const MultiSelectorItem = forwardRef<
         "rounded-md cursor-pointer px-2 py-1 transition-colors flex justify-between ",
         className,
         isIncluded && "opacity-50 cursor-default",
-        props.disabled && "opacity-50 cursor-not-allowed",
+        props.disabled && "opacity-50 cursor-not-allowed"
       )}
       onMouseDown={mousePreventDefault}
     >
