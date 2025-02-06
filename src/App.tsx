@@ -3,7 +3,6 @@ import {
   BackgroundVariant,
   Panel,
   ReactFlow,
-  type DefaultEdgeOptions,
   useReactFlow,
   addEdge,
   Connection,
@@ -19,7 +18,7 @@ import { useLayoutedElements } from "@/hooks/useLayoutedElements.js";
 import { useCallback, useEffect, useRef } from "react";
 import { FlowToolbar } from "@/components/flow/FlowToolbar.js";
 import { useDnD } from "@/hooks/useDnD.jsx";
-import FloatingConnectionLine from "@/components/flow/edges/FloatingEdgeConnectionLine.jsx";
+import FloatingConnectionLine from "@/components/flow/edges/FloatingEdgeConnectionLine";
 import { edgeTypes, nodeTypes } from "./lib/data";
 
 const selector = (state: AppState) => ({
@@ -37,8 +36,6 @@ const selector = (state: AppState) => ({
 });
 
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
-
-const defaultEdgeOptions: DefaultEdgeOptions = {};
 
 const proOptions = { hideAttribution: true };
 
@@ -211,7 +208,6 @@ function App() {
           onNodeDragStart={handleNodeDragStart}
           onNodeDragStop={handleNodeDragStop}
           onDragOver={handleDragOver}
-          defaultEdgeOptions={defaultEdgeOptions}
           edgeTypes={edgeTypes}
           nodeTypes={nodeTypes}
           proOptions={proOptions}
