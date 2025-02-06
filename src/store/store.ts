@@ -110,15 +110,11 @@ useStore.subscribe((state) => {
 export const loadFromLocalStorage = () => {
     let nodes = initialNodes;
     let edges = initialEdges;
-    try {
-        nodes = JSON.parse(localStorage.getItem('nodes') || '[]');
-    } catch (e) {
-        console.error('Error parsing nodes from localStorage', e);
-    }
-    try {
-        edges = JSON.parse(localStorage.getItem('edges') || '[]');
-    } catch (e) {
-        console.error('Error parsing edges from localStorage', e);
+    const localNodes = localStorage.getItem('nodes');
+    const localEdges = localStorage.getItem('edges');
+    if (localNodes && localEdges) {
+        nodes = JSON.parse(localNodes);
+        edges = JSON.parse(localEdges);
     }
     return { nodes, edges };
 }
