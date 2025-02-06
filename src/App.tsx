@@ -14,7 +14,7 @@ import "./App.css";
 import { useShallow } from "zustand/react/shallow";
 
 import { AppState } from "@/store/types";
-import useStore from "@/store/store";
+import useStore, { loadFromLocalStorage } from "@/store/store";
 import { useLayoutedElements } from "@/hooks/useLayoutedElements.js";
 import { useCallback, useEffect, useRef } from "react";
 import { FlowToolbar } from "@/components/flow/FlowToolbar.js";
@@ -61,6 +61,16 @@ function App() {
   const [type] = useDnD();
 
   useEffect(() => {
+    loadFromLocalStorage();
+  }, []);
+
+  useEffect(() => {
+    const { nodes, edges } = loadFromLocalStorage();
+    setNodes(nodes);
+    setEdges(edges);
+  }, [setNodes, setEdges]);
+
+  useEffect(() => {
     if (viewportInitialized) {
       setTimeout(() => {
         fitView({
@@ -68,7 +78,7 @@ function App() {
           duration: 500,
           maxZoom: 1,
         });
-      }, 500);
+      }, 200);
     }
   }, [viewportInitialized, fitView]);
 

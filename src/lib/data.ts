@@ -5,14 +5,12 @@ import DefaultNodeEditForm from "@/components/flow/nodes/BasicNode/BasicNodeEdit
 import { RootNode } from "@/components/flow/nodes/RootNode/RootNode";
 import YoutubeNodeEditForm from "@/components/flow/nodes/YoutubeNode/YoutubeNodeEditForm";
 import { EdgeTypes, NodeTypes } from "@xyflow/react";
-import { BookOpenText, Link2, LucideIcon, Network, Newspaper, Paperclip, Podcast, Rss, Youtube } from "lucide-react";
-import FileNodeEditForm from "@/components/flow/nodes/FileNode/FileNodeEditForm";
+import { BookOpenText, Link2, LucideIcon, Network, Newspaper, Podcast, Rss, Youtube } from "lucide-react";
 import CategoryNodeDataDisplay from "@/components/flow/nodes/CategoryNode/CategoryNodeDataDisplay";
 import CategoryNodeEditForm from "@/components/flow/nodes/CategoryNode/CategoryNodeEditForm";
 import BasicNodeEditForm from "@/components/flow/nodes/BasicNode/BasicNodeEditForm";
 import BasicNodeDataDisplay from "@/components/flow/nodes/BasicNode/BasicNodeDataDisplay";
 import YoutubeNodeDataDisplay from "@/components/flow/nodes/YoutubeNode/YoutubeNodeDataDisplay";
-import FileNodeDataDisplay from "@/components/flow/nodes/FileNode/FileNodeDataDisplay";
 import BlogNodeEditForm from "@/components/flow/nodes/BlogNode/BlogNodeEditForm";
 import BlogNodeDataDisplay from "@/components/flow/nodes/BlogNode/BlogNodeDataDisplay";
 
@@ -21,7 +19,6 @@ export const nodeTypes: NodeTypes = {
     category: CustomNodeWrapper,
     basic: CustomNodeWrapper,
     youtube: CustomNodeWrapper,
-    file: CustomNodeWrapper,
     blog: CustomNodeWrapper,
     article: CustomNodeWrapper,
     podcast: CustomNodeWrapper,
@@ -56,37 +53,30 @@ export const customNodes: { [key: string]: CustomNodeType } = {
         data: YoutubeNodeDataDisplay,
         icon: Youtube,
     },
-    "file": {
-        name: "File",
-        order: 3,
-        edit: FileNodeEditForm,
-        data: FileNodeDataDisplay,
-        icon: Paperclip,
-    },
     "blog": {
         name: "Blog",
-        order: 4,
+        order: 3,
         edit: BlogNodeEditForm,
         data: BlogNodeDataDisplay,
         icon: Rss,
     },
     "article": {
         name: "Article",
-        order: 5,
+        order: 4,
         edit: DefaultNodeEditForm,
         data: DefaultNodeDataDisplay,
         icon: Newspaper,
     },
     "podcast": {
         name: "Podcast",
-        order: 6,
+        order: 5,
         edit: DefaultNodeEditForm,
         data: DefaultNodeDataDisplay,
         icon: Podcast,
     },
     "book": {
         name: "Book",
-        order: 7,
+        order: 6,
         edit: DefaultNodeEditForm,
         data: DefaultNodeDataDisplay,
         icon: BookOpenText,

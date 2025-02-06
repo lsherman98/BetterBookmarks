@@ -40,7 +40,8 @@ export function CustomNodeWrapper({
   const handleOpenURL = () => {
     if (type === "category" || type === "file") return;
     if ("url" in data) {
-      window.open(data.url, "_blank");
+      const url = `https://${data.url}`;
+      window.open(url, "_blank", "noopener,noreferrer");
     }
   };
 
@@ -69,9 +70,9 @@ export function CustomNodeWrapper({
   return showContent ? (
     <BaseNode
       selected={selected}
-      className={`min-w-[12rem] max-w-[16rem] ${type === "category" && !showContent ? "rounded-full" : ""} ${
-        id === targetNode ? "border-2 border-dashed border-blue-500" : ""
-      }`}
+      className={`min-w-[12rem] max-w-[16rem] ${
+        type === "category" && !showContent ? "rounded-full" : ""
+      } ${id === targetNode ? "border-2 border-dashed border-blue-500" : ""}`}
     >
       <NodeHeader className={`border-b bg-${type}`}>
         <NodeHeaderIcon>{<component.icon />}</NodeHeaderIcon>

@@ -14,7 +14,7 @@ export const layoutGraph = (
     inputNodes: AppNode[],
     inputEdges: Edge[],
     options = {
-        iterations: 2000,
+        iterations: 10000,
         manyBodyStrength: -2000,
         xStrength: 0.03,
         yStrength: 0.03,

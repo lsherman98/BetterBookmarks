@@ -3,7 +3,6 @@ import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
 import { initialNodes } from './nodes';
 import { initialEdges } from './edges';
 import { type AppState } from './types';
-import { flows } from './flows';
 import { layoutGraph } from '@/lib/layout';
 
 // this is our useStore hook that we can use in our components to get parts of the store and call actions
@@ -12,23 +11,6 @@ const useStore = create<AppState>((set, get) => ({
     edges: initialEdges,
     targetNode: null,
     isRunning: false,
-    flows: flows,
-    selectedFlow: flows[0],
-    addFlow: (flowData) => {
-        set({
-            flows: [...get().flows, { id: String(get().flows.length + 1), data: flowData }],
-        });
-    },
-    updateFlow: (flowId, data) => {
-        set({
-            flows: get().flows.map((flow) => (flow.id === flowId ? { ...flow, data } : flow)),
-        });
-    },
-    setSelectedFlow: (flowId) => {
-        set({
-            selectedFlow: get().flows.find((flow) => flow.id === flowId),
-        });
-    },
     onNodesChange: (changes) => {
         set({
             nodes: applyNodeChanges(changes, get().nodes),
@@ -63,7 +45,6 @@ const useStore = create<AppState>((set, get) => ({
         set({
             nodes: get().nodes.map((node) => (node.id === id ? { ...node, data } : node)),
         });
-        get().layoutNodes();
     },
     deleteNode: (id) => {
         const { nodes, edges } = get();
@@ -79,7 +60,6 @@ const useStore = create<AppState>((set, get) => ({
         };
         const descendantIds = getDescendantIds(id);
         const nodesToDelete = [id, ...descendantIds];
-        console.log(nodes.filter(node => !nodesToDelete.includes(node.id)));
         set({
             nodes: nodes.filter(node => !nodesToDelete.includes(node.id)),
             edges: edges.filter(edge => !nodesToDelete.includes(edge.source) && !nodesToDelete.includes(edge.target)),
@@ -117,5 +97,30 @@ const useStore = create<AppState>((set, get) => ({
         });
     },
 }));
+
+const saveToLocalStorage = (state: AppState) => {
+    localStorage.setItem('nodes', JSON.stringify(state.nodes));
+    localStorage.setItem('edges', JSON.stringify(state.edges));
+};
+
+useStore.subscribe((state) => {
+    saveToLocalStorage(state);
+});
+
+export const loadFromLocalStorage = () => {
+    let nodes = [];
+    let edges = [];
+    try {
+        nodes = JSON.parse(localStorage.getItem('nodes') || '[]');
+    } catch (e) {
+        console.error('Error parsing nodes from localStorage', e);
+    }
+    try {
+        edges = JSON.parse(localStorage.getItem('edges') || '[]');
+    } catch (e) {
+        console.error('Error parsing edges from localStorage', e);
+    }
+    return { nodes, edges };
+}
 
 export default useStore;
