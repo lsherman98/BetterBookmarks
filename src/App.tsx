@@ -10,7 +10,7 @@ import {
   Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import "./App.css";
+import "./app.css";
 import { useShallow } from "zustand/react/shallow";
 
 import { AppState } from "@/store/types";
