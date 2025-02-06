@@ -108,8 +108,8 @@ useStore.subscribe((state) => {
 });
 
 export const loadFromLocalStorage = () => {
-    let nodes = [];
-    let edges = [];
+    let nodes = initialNodes;
+    let edges = initialEdges;
     try {
         nodes = JSON.parse(localStorage.getItem('nodes') || '[]');
     } catch (e) {
