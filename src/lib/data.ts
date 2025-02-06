@@ -12,7 +12,7 @@ import BasicNodeDataDisplay from "@/components/flow/nodes/BasicNode/BasicNodeDat
 import YoutubeNodeDataDisplay from "@/components/flow/nodes/YoutubeNode/YoutubeNodeDataDisplay";
 import BlogNodeEditForm from "@/components/flow/nodes/BlogNode/BlogNodeEditForm";
 import BlogNodeDataDisplay from "@/components/flow/nodes/BlogNode/BlogNodeDataDisplay";
-import FloatingEdge from "@/components/flow/edges/FloatingEdge";
+import FloatingEdge from "@/components/flow/edges/floatingEdge";
 
 export const nodeTypes: NodeTypes = {
     root: RootNode,

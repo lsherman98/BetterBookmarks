@@ -19,7 +19,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { FlowToolbar } from "@/components/flow/FlowToolbar.js";
 import { useDnD } from "@/hooks/useDnD.jsx";
 import { edgeTypes, nodeTypes } from "./lib/data";
-import FloatingConnectionLine from "@/components/flow/edges/FloatingEdgeConnectionLine";
+import FloatingConnectionLine from "./components/flow/edges/floatingEdgeConnectionLine";
 
 const selector = (state: AppState) => ({
   nodes: state.nodes,
