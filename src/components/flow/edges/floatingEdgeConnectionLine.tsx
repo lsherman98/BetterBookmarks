@@ -1,7 +1,7 @@
 import { getEdgeParams } from "@/lib/utils";
 import { getBezierPath } from "@xyflow/react";
 
-function FloatingConnectionLine({ toX, toY, fromPosition, toPosition, fromNode }) {
+export default function FloatingConnectionLine({ toX, toY, fromPosition, toPosition, fromNode }) {
   if (!fromNode) {
     return null;
   }
@@ -34,5 +34,3 @@ function FloatingConnectionLine({ toX, toY, fromPosition, toPosition, fromNode }
     </g>
   );
 }
-
-export default FloatingConnectionLine;
