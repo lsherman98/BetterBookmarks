@@ -18,8 +18,8 @@ import { useLayoutedElements } from "@/hooks/useLayoutedElements.js";
 import { useCallback, useEffect, useRef } from "react";
 import { FlowToolbar } from "@/components/flow/FlowToolbar.js";
 import { useDnD } from "@/hooks/useDnD.jsx";
-import FloatingConnectionLine from "@/components/flow/edges/FloatingEdgeConnectionLine";
 import { edgeTypes, nodeTypes } from "./lib/data";
+import FloatingConnectionLine from "./components/flow/edges/FloatingEdgeConnectionLine";
 
 const selector = (state: AppState) => ({
   nodes: state.nodes,

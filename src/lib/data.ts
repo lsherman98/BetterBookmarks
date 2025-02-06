@@ -1,4 +1,3 @@
-import FloatingEdge from "@/components/flow/edges/FloatingEdge";
 import { CustomNodeWrapper } from "@/components/flow/nodes/CustomNodeWrapper";
 import DefaultNodeDataDisplay from "@/components/flow/nodes/BasicNode/BasicNodeDataDisplay";
 import DefaultNodeEditForm from "@/components/flow/nodes/BasicNode/BasicNodeEditForm";
@@ -13,6 +12,7 @@ import BasicNodeDataDisplay from "@/components/flow/nodes/BasicNode/BasicNodeDat
 import YoutubeNodeDataDisplay from "@/components/flow/nodes/YoutubeNode/YoutubeNodeDataDisplay";
 import BlogNodeEditForm from "@/components/flow/nodes/BlogNode/BlogNodeEditForm";
 import BlogNodeDataDisplay from "@/components/flow/nodes/BlogNode/BlogNodeDataDisplay";
+import FloatingEdge from "@/components/flow/edges/FloatingEdge";
 
 export const nodeTypes: NodeTypes = {
     root: RootNode,
