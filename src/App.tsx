@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef } from "react";
 import {
   Background,
   BackgroundVariant,
@@ -9,17 +10,26 @@ import {
   Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import "./App.css";
 import { useShallow } from "zustand/react/shallow";
 
-import { AppState } from "@/store/types";
+import "./App.css";
+import { FlowToolbar } from "@/components/flow/FlowToolbar";
+import FloatingConnectionLine from "@/components/flow/edges/floatingEdgeConnectionLine";
+import { useDnD } from "@/hooks/useDnD";
+import { useLayoutedElements } from "@/hooks/useLayoutedElements";
+import { edgeTypes, nodeTypes } from "@/lib/data";
 import useStore, { loadFromLocalStorage } from "@/store/store";
-import { useLayoutedElements } from "@/hooks/useLayoutedElements.js";
-import { useCallback, useEffect, useRef } from "react";
-import { FlowToolbar } from "@/components/flow/FlowToolbar.js";
-import { useDnD } from "@/hooks/useDnD.jsx";
-import { edgeTypes, nodeTypes } from "./lib/data";
-import FloatingConnectionLine from "./components/flow/edges/floatingEdgeConnectionLine";
+import { AppState } from "@/store/types";
+
+const DEFAULT_VIEWPORT = { x: 0, y: 0, zoom: 1.5 };
+const PRO_OPTIONS = { hideAttribution: true };
+const FIT_VIEW_CONFIG = {
+  padding: 0.2,
+  duration: 500,
+  maxZoom: 1,
+};
+const NODE_DIMENSIONS = { width: 192, height: 135 };
+const DROP_NODE_DIMENSIONS = { width: 150, height: 109 };
 
 const selector = (state: AppState) => ({
   nodes: state.nodes,
@@ -30,14 +40,8 @@ const selector = (state: AppState) => ({
   setNodes: state.setNodes,
   selectNode: state.selectNode,
   clearSelectedNodes: state.clearSelectedNodes,
-  isNodeSelected: state.isNodeSelected,
   setTargetNode: state.setTargetNode,
-  isRunning: state.isRunning,
 });
-
-const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
-
-const proOptions = { hideAttribution: true };
 
 function App() {
   const {
@@ -51,30 +55,23 @@ function App() {
     clearSelectedNodes,
     setTargetNode,
   } = useStore(useShallow(selector));
+
   const dragEvents = useLayoutedElements();
   const { getIntersectingNodes, screenToFlowPosition, fitView, viewportInitialized } =
     useReactFlow();
-  const reactFlowWrapper = useRef(null);
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [type] = useDnD();
 
   useEffect(() => {
-    loadFromLocalStorage();
-  }, []);
-
-  useEffect(() => {
-    const { nodes, edges } = loadFromLocalStorage();
-    setNodes(nodes);
-    setEdges(edges);
+    const { nodes: savedNodes, edges: savedEdges } = loadFromLocalStorage();
+    setNodes(savedNodes);
+    setEdges(savedEdges);
   }, [setNodes, setEdges]);
 
   useEffect(() => {
     if (viewportInitialized) {
       setTimeout(() => {
-        fitView({
-          padding: 0.2,
-          duration: 500,
-          maxZoom: 1,
-        });
+        fitView(FIT_VIEW_CONFIG);
       }, 200);
     }
   }, [viewportInitialized, fitView]);
@@ -85,7 +82,7 @@ function App() {
   );
 
   const handleNodeClick = useCallback(
-    (_, node: Node) => {
+    (_: unknown, node: Node) => {
       selectNode(node.id);
     },
     [selectNode]
@@ -96,35 +93,37 @@ function App() {
   }, [clearSelectedNodes]);
 
   const handleNodeDrag = useCallback(
-    (event, node: Node) => {
-      dragEvents.drag(event, node);
-      const intersection = getIntersectingNodes(node)
+    (_: unknown, node: Node) => {
+      dragEvents.drag(_, node);
+
+      const intersectingNodeId = getIntersectingNodes(node)
         .map((n) => n.id)
         .at(0);
-      if (!intersection) setTargetNode(null);
-      else setTargetNode(intersection);
+
+      setTargetNode(intersectingNodeId ?? null);
     },
     [dragEvents, getIntersectingNodes, setTargetNode]
   );
 
   const handleNodeDragStart = useCallback(
-    (event, node: Node) => {
-      dragEvents.start(event, node);
+    (_: unknown, node: Node) => {
+      dragEvents.start(_, node);
     },
     [dragEvents]
   );
 
   const handleNodeDragStop = useCallback(
-    (event, node: Node) => {
+    (_: unknown, node: Node) => {
       setTargetNode(null);
-      dragEvents.stop(event, node);
-      const intersectingNode = getIntersectingNodes(node)
+      dragEvents.stop(_, node);
+
+      const intersectingNodeId = getIntersectingNodes(node)
         .map((n) => n.id)
         .at(0);
 
-      if (intersectingNode && intersectingNode !== node.id) {
+      if (intersectingNodeId && intersectingNodeId !== node.id) {
         const newEdges = edges.map((edge) =>
-          edge.target === node.id ? { ...edge, source: intersectingNode } : edge
+          edge.target === node.id ? { ...edge, source: intersectingNodeId } : edge
         );
         setEdges(newEdges);
       }
@@ -133,52 +132,62 @@ function App() {
   );
 
   const handleDragOver = useCallback(
-    (event) => {
+    (event: React.DragEvent) => {
       event.preventDefault();
       event.dataTransfer.dropEffect = "move";
+
       const position = screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
-      const intersectingNode = getIntersectingNodes(
-        { ...position, width: 192, height: 135 },
-        true
-      ).at(0);
+
+      const intersectingNode = getIntersectingNodes({ ...position, ...NODE_DIMENSIONS }, true).at(
+        0
+      );
+
       setTargetNode(intersectingNode?.id ?? null);
     },
     [getIntersectingNodes, screenToFlowPosition, setTargetNode]
   );
 
   const onDrop = useCallback(
-    (event) => {
+    (event: React.DragEvent) => {
       event.preventDefault();
+
       if (event.dataTransfer.files.length > 0) {
         return;
       }
+
       setTargetNode(null);
+
       const position = screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
+
       const intersectingNode = getIntersectingNodes(
-        { ...position, width: 150, height: 109 },
+        { ...position, ...DROP_NODE_DIMENSIONS },
         true
       ).at(0);
+
       if (!intersectingNode) {
         return;
       }
+
       const newNode = {
         id: (nodes.length + 1).toString(),
         type: type,
         position,
         data: { isNew: true },
       };
+
       const newEdge = {
         id: `e${intersectingNode.id}-${newNode.id}`,
         source: intersectingNode.id,
         target: newNode.id,
         type: "floating",
       };
+
       setNodes([...nodes, newNode]);
       setEdges([...edges, newEdge]);
       selectNode(newNode.id);
@@ -198,7 +207,7 @@ function App() {
 
   return (
     <div className="flex flex-row flex-grow h-full" ref={reactFlowWrapper}>
-      <div className="flex-grow h-full" ref={reactFlowWrapper}>
+      <div className="flex-grow h-full">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -210,12 +219,12 @@ function App() {
           onDragOver={handleDragOver}
           edgeTypes={edgeTypes}
           nodeTypes={nodeTypes}
-          proOptions={proOptions}
+          proOptions={PRO_OPTIONS}
           nodesDraggable={true}
           nodesConnectable={false}
           onConnect={onConnect}
           connectionLineComponent={FloatingConnectionLine}
-          defaultViewport={defaultViewport}
+          defaultViewport={DEFAULT_VIEWPORT}
           selectNodesOnDrag={false}
           elevateEdgesOnSelect={true}
           elevateNodesOnSelect={true}

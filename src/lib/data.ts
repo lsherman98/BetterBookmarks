@@ -1,18 +1,32 @@
-import { CustomNodeWrapper } from "@/components/flow/nodes/CustomNodeWrapper";
-import DefaultNodeDataDisplay from "@/components/flow/nodes/BasicNode/BasicNodeDataDisplay";
-import DefaultNodeEditForm from "@/components/flow/nodes/BasicNode/BasicNodeEditForm";
-import { RootNode } from "@/components/flow/nodes/RootNode/RootNode";
-import YoutubeNodeEditForm from "@/components/flow/nodes/YoutubeNode/YoutubeNodeEditForm";
 import { EdgeTypes, NodeTypes } from "@xyflow/react";
-import { BookOpenText, Link2, LucideIcon, Network, Newspaper, Podcast, Rss, Youtube } from "lucide-react";
+import {
+    BookOpenText,
+    Link2,
+    LucideIcon,
+    Network,
+    Newspaper,
+    Podcast,
+    Rss,
+    Youtube,
+} from "lucide-react";
+
+import FloatingEdge from "@/components/flow/edges/floatingEdge";
+import { CustomNodeWrapper } from "@/components/flow/nodes/CustomNodeWrapper";
+import { RootNode } from "@/components/flow/nodes/RootNode/RootNode";
+import ArticleNodeDataDisplay from "@/components/flow/nodes/ArticleNode/ArticleNodeDataDisplay";
+import ArticleNodeEditForm from "@/components/flow/nodes/ArticleNode/ArticleNodeEditForm";
+import BasicNodeDataDisplay from "@/components/flow/nodes/BasicNode/BasicNodeDataDisplay";
+import BasicNodeEditForm from "@/components/flow/nodes/BasicNode/BasicNodeEditForm";
+import BlogNodeDataDisplay from "@/components/flow/nodes/BlogNode/BlogNodeDataDisplay";
+import BlogNodeEditForm from "@/components/flow/nodes/BlogNode/BlogNodeEditForm";
+import BookNodeDataDisplay from "@/components/flow/nodes/BookNode/BookNodeDataDisplay";
+import BookNodeEditForm from "@/components/flow/nodes/BookNode/BookNodeEditForm";
 import CategoryNodeDataDisplay from "@/components/flow/nodes/CategoryNode/CategoryNodeDataDisplay";
 import CategoryNodeEditForm from "@/components/flow/nodes/CategoryNode/CategoryNodeEditForm";
-import BasicNodeEditForm from "@/components/flow/nodes/BasicNode/BasicNodeEditForm";
-import BasicNodeDataDisplay from "@/components/flow/nodes/BasicNode/BasicNodeDataDisplay";
+import PodcastNodeDataDisplay from "@/components/flow/nodes/PodcastNode/PodcastNodeDataDisplay";
+import PodcastNodeEditForm from "@/components/flow/nodes/PodcastNode/PodcastNodeEditForm";
 import YoutubeNodeDataDisplay from "@/components/flow/nodes/YoutubeNode/YoutubeNodeDataDisplay";
-import BlogNodeEditForm from "@/components/flow/nodes/BlogNode/BlogNodeEditForm";
-import BlogNodeDataDisplay from "@/components/flow/nodes/BlogNode/BlogNodeDataDisplay";
-import FloatingEdge from "@/components/flow/edges/floatingEdge";
+import YoutubeNodeEditForm from "@/components/flow/nodes/YoutubeNode/YoutubeNodeEditForm";
 
 export const nodeTypes: NodeTypes = {
     root: RootNode,
@@ -29,56 +43,65 @@ export const edgeTypes: EdgeTypes = {
     floating: FloatingEdge,
 };
 
-type ReactComponent = (props) => JSX.Element;
-type CustomNodeType = { edit: ReactComponent, data: ReactComponent, icon: LucideIcon, order: number, name: string };
-export const customNodes: { [key: string]: CustomNodeType } = {
-    "category": {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ReactComponent = (props: any) => JSX.Element;
+
+type CustomNodeType = {
+    name: string;
+    order: number;
+    edit: ReactComponent;
+    data: ReactComponent;
+    icon: LucideIcon;
+};
+
+export const customNodes: Record<string, CustomNodeType> = {
+    category: {
         name: "Category",
         order: 0,
         edit: CategoryNodeEditForm,
         data: CategoryNodeDataDisplay,
         icon: Network,
     },
-    "basic": {
+    basic: {
         name: "Basic",
         order: 1,
         edit: BasicNodeEditForm,
         data: BasicNodeDataDisplay,
         icon: Link2,
     },
-    "youtube": {
+    youtube: {
         name: "YouTube",
         order: 2,
         edit: YoutubeNodeEditForm,
         data: YoutubeNodeDataDisplay,
         icon: Youtube,
     },
-    "blog": {
+    blog: {
         name: "Blog",
         order: 3,
         edit: BlogNodeEditForm,
         data: BlogNodeDataDisplay,
         icon: Rss,
     },
-    "article": {
+    article: {
         name: "Article",
         order: 4,
-        edit: DefaultNodeEditForm,
-        data: DefaultNodeDataDisplay,
+        edit: ArticleNodeEditForm,
+        data: ArticleNodeDataDisplay,
         icon: Newspaper,
     },
-    "podcast": {
+    podcast: {
         name: "Podcast",
         order: 5,
-        edit: DefaultNodeEditForm,
-        data: DefaultNodeDataDisplay,
+        edit: PodcastNodeEditForm,
+        data: PodcastNodeDataDisplay,
         icon: Podcast,
     },
-    "book": {
+    book: {
         name: "Book",
         order: 6,
-        edit: DefaultNodeEditForm,
-        data: DefaultNodeDataDisplay,
+        edit: BookNodeEditForm,
+        data: BookNodeDataDisplay,
         icon: BookOpenText,
     },
-}
+};

@@ -1,6 +1,6 @@
 import { type AppNode } from './types';
 
-export const initialNodes = [
+export const initialNodes: AppNode[] = [
     {
         id: '1',
         type: 'root',
@@ -10,4 +10,4 @@ export const initialNodes = [
         selectable: false,
         draggable: false,
     },
-] as AppNode[];
+];

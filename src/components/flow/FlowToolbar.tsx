@@ -1,16 +1,20 @@
-import { useDnD } from "@/hooks/useDnD";
-import { CrosshairIcon, Filter, Plus, X } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
-import { useReactFlow } from "@xyflow/react";
-import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
-import { customNodes } from "@/lib/data";
-import { TooltipIcon } from "./TooltipIcon";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { useReactFlow } from "@xyflow/react";
+import { useShallow } from "zustand/react/shallow";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { CrosshairIcon, Filter, Plus, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   MultiSelector,
   MultiSelectorContent,
@@ -18,11 +22,40 @@ import {
   MultiSelectorItem,
   MultiSelectorList,
   MultiSelectorTrigger,
-} from "../ui/extension/multi-select";
-import { Button } from "../ui/button";
-import { AppState } from "@/store/types";
-import { useShallow } from "zustand/react/shallow";
+} from "@/components/ui/extension/multi-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { TooltipIcon } from "@/components/flow/TooltipIcon";
+import { customNodes } from "@/lib/data";
+import { useDnD } from "@/hooks/useDnD";
 import useStore from "@/store/store";
+import { AppState } from "@/store/types";
+
+const FIT_VIEW_DELAY = 500;
+const FIT_VIEW_CONFIG = {
+  padding: 0.2,
+  duration: 500,
+  maxZoom: 1,
+};
+
+const storeSelector = (state: AppState) => ({
+  nodes: state.nodes,
+  setNodes: state.setNodes,
+  layoutNodes: state.layoutNodes,
+});
+
+const filtersFormSchema = z.object({
+  type: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+});
+
+type FiltersFormValues = z.infer<typeof filtersFormSchema>;
 
 export function FlowToolbar() {
   return (
@@ -38,7 +71,7 @@ const AddNodePopOver = () => {
   const [, setType] = useDnD();
   const [isOpen, setIsOpen] = useState(false);
 
-  const onDragStart = (event, nodeType: string) => {
+  const onDragStart = (event: React.DragEvent, nodeType: string) => {
     setType(nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
@@ -86,43 +119,32 @@ const AddNodePopOver = () => {
 
 const FitViewTrigger = () => {
   const { fitView } = useReactFlow();
-  const layoutNodes = useStore((state: AppState) => state.layoutNodes);
+  const { layoutNodes } = useStore(useShallow(storeSelector));
+
+  const handleFitView = () => {
+    layoutNodes();
+    setTimeout(() => {
+      fitView(FIT_VIEW_CONFIG);
+    }, FIT_VIEW_DELAY);
+  };
+
   return (
     <TooltipIcon
       icon={<CrosshairIcon size={24} />}
       tooltip="Fit Content"
       sideOffset={14}
-      onClick={() => {
-        layoutNodes();
-        setTimeout(() => {
-          fitView({
-            padding: 0.2,
-            duration: 500,
-            maxZoom: 1,
-          });
-        }, 500);
-      }}
+      onClick={handleFitView}
     />
   );
 };
-
-const filtersFormSchema = z.object({
-  type: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-});
-
-const selector = (state: AppState) => ({
-  nodes: state.nodes,
-  setNodes: state.setNodes,
-});
 
 const Filters = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [types, setTypes] = useState<{ label: string; value: string }[]>([]);
   const [tags, setTags] = useState<string[]>([]);
-  const { nodes, setNodes } = useStore(useShallow(selector));
+  const { nodes, setNodes } = useStore(useShallow(storeSelector));
 
-  const form = useForm<z.infer<typeof filtersFormSchema>>({
+  const form = useForm<FiltersFormValues>({
     resolver: zodResolver(filtersFormSchema),
     defaultValues: {
       tags: [],
@@ -130,14 +152,30 @@ const Filters = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof filtersFormSchema>) {
+  useEffect(() => {
+    const nodeTypes = Object.keys(customNodes)
+      .sort((a, b) => customNodes[a].order - customNodes[b].order)
+      .map((key) => ({
+        value: key,
+        label: customNodes[key].name,
+      }));
+    setTypes(nodeTypes);
+
+    const allTags = nodes.flatMap((node) => node.data.tags ?? []) as string[];
+    setTags([...new Set(allTags)]);
+  }, [nodes]);
+
+  function onSubmit(values: FiltersFormValues) {
     const filteredNodes = nodes.filter((node) => {
       if (node.type === "category" || node.type === "root") return true;
+
       if (values.type && node.type !== values.type) return false;
+
       if (values.tags && values.tags.length > 0) {
         const nodeTags = (node.data.tags as string[]) ?? [];
         if (!values.tags.every((tag) => nodeTags.includes(tag))) return false;
       }
+
       return true;
     });
 
@@ -150,7 +188,12 @@ const Filters = () => {
       }
     });
 
-    setNodes(nodes.map((node) => ({ ...node, hidden: !filteredNodes.includes(node) })));
+    setNodes(
+      nodes.map((node) => ({
+        ...node,
+        hidden: !filteredNodes.includes(node),
+      }))
+    );
   }
 
   function handleClearFilters() {
@@ -160,21 +203,6 @@ const Filters = () => {
       tags: [],
     });
   }
-
-  useEffect(() => {
-    const nodeTypes = Object.keys(customNodes)
-      .sort((a, b) => customNodes[a].order - customNodes[b].order)
-      .map((key) => {
-        return {
-          value: key,
-          label: customNodes[key].name,
-        };
-      });
-    setTypes(nodeTypes);
-
-    const tags = nodes.flatMap((node) => node.data.tags ?? []) as string[];
-    setTags([...new Set(tags)]);
-  }, []);
 
   return (
     <Popover onOpenChange={setIsOpen}>
@@ -221,7 +249,6 @@ const Filters = () => {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="tags"
@@ -248,7 +275,6 @@ const Filters = () => {
                         </MultiSelectorContent>
                       </MultiSelector>
                     </FormControl>
-
                     <FormMessage />
                   </FormItem>
                 )}
